@@ -1,0 +1,75 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<Authentication.Models.User> SignInManager
+
+@{
+    var isUser = (User.IsInRole("User"));
+    var isAdmin = (User.IsInRole("Admin"));
+    var applicationTitle = "Sentinel";
+}
+
+<!DOCTYPE html>
+<html lang="en-gb">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="author" content="John Morgan, Solutions Development">
+    @RenderSection("Metatags", false)
+    <title>@ViewData["Title"] - @applicationTitle</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
+    <link href="~/lib/toastr.js/toastr.min.css" rel="stylesheet" />
+    <link href="~/lib/font-awesome/css/all.min.css" rel="stylesheet" />
+    <link rel="icon" href="@Url.Content("~/favicon.ico")" />
+    @RenderSection("ExtraCss", required: false)
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-ydh-purple shadow-sm mb-2">
+            <div class="container">
+                <div class="navbar-brand">
+                    <img src="~/images/YDH-circle-white-150.png" height="40" width="40" alt="YDH" />
+                    <span>@applicationTitle</span>
+                </div>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse" id="navbarSupportedContent">
+                    <partial name="_LoginPartial" />
+                    <ul class="navbar-nav flex-grow-1">
+                        @if (isUser)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-white" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            </li>
+                        }
+                        @if (isAdmin)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-white" asp-area="" asp-controller="Admin" asp-action="Index">Admin link</a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2020 - YDH
+        </div>
+    </footer>
+    <script src="~/lib/jquery/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/font-awesome/js/all.min.js"></script>
+    <script src="~/lib/toastr.js/toastr.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>
