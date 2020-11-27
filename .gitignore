@@ -3,6 +3,9 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+appsettings.*.json
+wwwroot/uploads/
+
 # User-specific files
 *.rsuser
 *.suo
@@ -172,7 +175,7 @@ publish/
 *.azurePubxml
 # Note: Comment the next line if you want to checkin your web deploy settings,
 # but database connection strings (with potential passwords) will be unencrypted
-*.pubxml
+#*.pubxml
 *.publishproj
 
 # Microsoft Azure Web App publish settings. Comment the next line if you want to
@@ -338,3 +341,6 @@ ASALocalRun/
 
 # BeatPulse healthcheck temp database
 healthchecksdb
+/FormManager/wwwroot/uploads/image_9d93b97e.png
+/FormManager/wwwroot/uploads/image_7f0f0323.png
+/FormManager/wwwroot/uploads/image_ea58bbe0.PNG
