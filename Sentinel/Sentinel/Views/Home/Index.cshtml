@@ -5,8 +5,11 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="d-flex mb-2">
-    <span class="mr-2">From</span>
+<div class="d-flex flex-nowrap mb-2">
+    <span class="font-italic mr-1">Found</span>
+    <span id="count" class="font-italic mr-1"></span>
+    <span class="font-italic mr-3">records</span>
+    <span class="text-nowrap mr-2">Filter from</span>
     <input type="date" id="min-date" class="form-control form-control-sm mr-2" />
     <span class="mr-2">to</span>
     <input type="date" id="max-date" class="form-control form-control-sm" />
@@ -79,12 +82,26 @@
     }
     <script src="~/lib/gsap/gsap.min.js"></script>
     <script asp-add-nonce="true">
+        function updateCounter() {
+            let count = $('tbody tr').length;
+            var obj = { current: 0 };
+            gsap.to(obj, {
+                duration: 1.5,
+                current: count,
+                onUpdate: function () {
+                    $('#count').html(Math.round(obj.current));
+                }
+            });
+        }
+
         $(function () {
             $('[data-toggle="tooltip"]').tooltip();
 
             $('[type="date"]').prop('max', function () {
                 return new Date().toJSON().split('T')[0];
             });
+
+            updateCounter();
 
             $('body').on('click', '.view-stack-trace', (event) => {
                 let id = $(event.currentTarget).data('id');
@@ -112,6 +129,7 @@
                 )
                     .done((data) => {
                         $('#error-table').html(data);
+                        updateCounter();
                     })
                     .fail((error) => {
                         console.dir(error);
