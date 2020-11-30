@@ -87,44 +87,32 @@ namespace Sentinel.Controllers
             return PartialView("_partialErrorData", sortedErrors);
         }
 
-        public async Task<IActionResult> GetByUserAgent(string id)
-        {
-            var errors = await _db.ErrorLogs
-                                .Where(w => !w.Processed && w.UserAgent == id)
-                                .OrderByDescending(o => o.Timestamp)
-                                .Take(1000) // TODO - take max 1000 for now... maybe return flag if >1k records
-                                .ToListAsync();
-
-            return Json(new { errors });
-        }
-
-        public async Task<IActionResult> GetByOs(string id)
-        {
-            var errors = await _db.ErrorLogs
-                                .Where(w => !w.Processed && w.Os == id)
-                                .OrderByDescending(o => o.Timestamp)
-                                .Take(1000) // TODO - take max 1000 for now... maybe return flag if >1k records
-                                .ToListAsync();
-
-            return Json(new { errors });
-        }
-
-        public async Task<IActionResult> GetByDevice(string id)
-        {
-            var errors = await _db.ErrorLogs
-                                .Where(w => !w.Processed && w.Device == id)
-                                .OrderByDescending(o => o.Timestamp)
-                                .Take(1000) // TODO - take max 1000 for now... maybe return flag if >1k records
-                                .ToListAsync();
-
-            return Json(new { errors });
-        }
-
         public async Task<IActionResult> GetStackTrace(int id)
         {
             var errorLogObj = await _db.ErrorLogs.FindAsync(id);
             var stackTrace = errorLogObj?.StackTrace ?? "";
             return Json(new { stackTrace });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> MarkAsProcessed(List<int> ids)
+        {
+            try
+            {
+                var toUpdate = _db.ErrorLogs.Where(w => ids.Contains(w.Id));
+                foreach (var el in toUpdate)
+                {
+                    el.Processed = true;
+                }
+                await _db.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error marking as processed: {String.Join(',', ids)}");
+                return BadRequest();
+            }
+
+            return Ok();
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

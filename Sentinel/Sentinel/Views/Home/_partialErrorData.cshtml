@@ -22,7 +22,7 @@
         @foreach (var e in Model)
         {
             <tr>
-                <td><input type="checkbox" name="e-@e.Id" /></td>
+                <td><input type="checkbox" class="event-checkbox" data-id="@e.Id" /></td>
                 <td>@e.Timestamp.ToLocalTime().ToShortDateString() @e.Timestamp.ToLocalTime().ToShortTimeString()</td>
                 <td>@e.ClientIp</td>
                 <td>@e.Application</td>

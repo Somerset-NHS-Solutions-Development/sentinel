@@ -46,6 +46,9 @@
     <button id="go-btn" class="btn btn-sm btn-success mr-2">Go</button>
     <button id="reset-btn" class="btn btn-sm btn-warning">Reset</button>
 </div>
+<div id="mark-div" class="mb-2" style="visibility: hidden">
+    <button id="mark-btn" class="btn btn-sm btn-danger mr-2">Mark selected items as processed</button>
+</div>
 
 <div id="error-table">
     <partial name="_partialErrorData.cshtml" for="errors">
@@ -82,6 +85,29 @@
     }
     <script src="~/lib/gsap/gsap.min.js"></script>
     <script asp-add-nonce="true">
+        function getFilteredData() {
+                let appName = $("#applications option:selected").val();
+                let userAgent = $("#agents option:selected").val();
+                let os = $("#os-list option:selected").val();
+                let device = $("#devices option:selected").val();
+                $.get('@Url.Action("GetData", "Home")?appName=' + appName
+                    + '&userAgent=' + userAgent
+                    + '&os=' + os
+                    + '&device=' + device
+                    + '&minDate=' + $('#min-date').val()
+                    + '&maxDate=' + $('#max-date').val()
+                )
+                .done((data) => {
+                    $('#error-table').html(data);
+                    updateCounter();
+                    hideShowProcessButton();
+                })
+                .fail((error) => {
+                    console.dir(error);
+                    toastr.error('Error getting data: ' + error.responseText);
+                })
+        }
+
         function updateCounter() {
             let count = $('tbody tr').length;
             var obj = { current: 0 };
@@ -92,6 +118,14 @@
                     $('#count').html(Math.round(obj.current));
                 }
             });
+        }
+
+        function hideShowProcessButton() {
+            if ($("input:checked").length > 0) {
+                $('#mark-div').css('visibility', 'visible');
+            } else {
+                $('#mark-div').css('visibility', 'hidden');
+            }
         }
 
         $(function () {
@@ -116,30 +150,38 @@
                     })
             })
             $('#go-btn').click((event) => {
-                let appName = $("#applications option:selected").val();
-                let userAgent = $("#agents option:selected").val();
-                let os = $("#os-list option:selected").val();
-                let device = $("#devices option:selected").val();
-                $.get('@Url.Action("GetData", "Home")?appName=' + appName
-                    + '&userAgent=' + userAgent
-                    + '&os=' + os
-                    + '&device=' + device
-                    + '&minDate=' + $('#min-date').val()
-                    + '&maxDate=' + $('#max-date').val()
-                )
-                    .done((data) => {
-                        $('#error-table').html(data);
-                        updateCounter();
-                    })
-                    .fail((error) => {
-                        console.dir(error);
-                        toastr.error('Error getting data: ' + error.responseText);
-                    })
+                getFilteredData();
             })
             $('#reset-btn').click((event) => {
                 $('.options-dropdown').val('');
                 $('#min-date').val('');
                 $('#max-date').val('');
+            })
+            $('body').on('change', '.event-checkbox', (event) => {
+                hideShowProcessButton();
+            })
+            $('body').on('change', '#check-all', (event) => {
+                if ($('#check-all').is(':checked')) {
+                    $('[type="checkbox"]').prop('checked', true);
+                } else {
+                    $('[type="checkbox"]').prop('checked', false);
+                }
+                hideShowProcessButton();
+            })
+            $('#mark-btn').click((event) => {
+                let idArray = [];
+                $('.event-checkbox:checked').each((index, element) => {
+                    idArray.push($(element).data('id'));
+                })
+                var postData = { ids: idArray };
+                $.post('@Url.Action("MarkAsProcessed", "Home")', $.param(postData, true))
+                    .done(() => {
+                        getFilteredData();
+                    })
+                    .fail((error) => {
+                        console.dir(error);
+                        toastr.error('Error marking as processed: ' + error.responseText);
+                    })
             })
         })
     </script>
