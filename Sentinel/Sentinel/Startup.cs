@@ -18,6 +18,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Sentinel.Models;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 
 namespace Sentinel
 {
@@ -51,6 +53,9 @@ namespace Sentinel
             services.AddTransient<ILdapService, LdapService>();
             services.AddTransient<IUserStore<User>, LdapUserStore>();
             services.AddTransient<IRoleStore<Role>, LdapRoleStore>();
+
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
 
             //services.AddTransient<IEmailService, EmailService>();
 

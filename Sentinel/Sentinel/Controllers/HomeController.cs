@@ -9,6 +9,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Sentinel.Models;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Sentinel.Controllers
 {
@@ -24,15 +26,105 @@ namespace Sentinel.Controllers
             _db = db;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
+        {
+            var errors = await _db.ErrorLogs
+                                .Where(w => !w.Processed)
+                                .OrderByDescending(o => o.Timestamp)
+                                .Take(1000) // TODO - take max 1000 for now... maybe return flag if >1k records
+                                .ToListAsync();
+            var applications = await _db.ErrorLogs.Select(s => s.Application).Distinct().ToListAsync();
+            var agents = await _db.ErrorLogs.Select(s => s.UserAgent).Distinct().ToListAsync();
+            var osList = await _db.ErrorLogs.Select(s => s.Os).Distinct().ToListAsync();
+            var devices = await _db.ErrorLogs.Select(s => s.Device).Distinct().ToListAsync();
+
+            HomePageViewModel vm = new HomePageViewModel
+            { 
+                errors = errors,
+                applications = applications,
+                agents = agents,
+                osList = osList,
+                devices = devices
+            };
+
+            return View(vm);
+        }
+
+        public async Task<IActionResult> GetData(string appName, string userAgent, string os, string device, DateTime? minDate = null, DateTime? maxDate = null)
         {
             var errors = _db.ErrorLogs
-                            .Where(w => !w.Processed)
-                            .OrderByDescending(o => o.Timestamp)
-                            .Take(1000) // TODO - take max 1000 for now... maybe return flag if >1k records
-                            .ToList();
+                            .Where(w => !w.Processed);
 
-            return View(errors);
+            if (!String.IsNullOrEmpty(appName))
+            {
+                errors = errors.Where(w => w.Application == appName);
+            }
+            if (!String.IsNullOrEmpty(userAgent))
+            {
+                errors = errors.Where(w => w.UserAgent == userAgent);
+            }
+            if (!String.IsNullOrEmpty(os))
+            {
+                errors = errors.Where(w => w.Os == os);
+            }
+            if (!String.IsNullOrEmpty(device))
+            {
+                errors = errors.Where(w => w.Device == device);
+            }
+            if (minDate.HasValue)
+            {
+                errors = errors.Where(w => w.Timestamp > minDate.Value);
+            }
+            if (maxDate.HasValue)
+            {
+                // Include this day
+                maxDate = maxDate.Value.AddDays(1);
+                errors = errors.Where(w => w.Timestamp < maxDate.Value);
+            }
+
+            var sortedErrors = await errors.OrderByDescending(o => o.Timestamp).ToListAsync();
+
+            return PartialView("_partialErrorData", sortedErrors);
+        }
+
+        public async Task<IActionResult> GetByUserAgent(string id)
+        {
+            var errors = await _db.ErrorLogs
+                                .Where(w => !w.Processed && w.UserAgent == id)
+                                .OrderByDescending(o => o.Timestamp)
+                                .Take(1000) // TODO - take max 1000 for now... maybe return flag if >1k records
+                                .ToListAsync();
+
+            return Json(new { errors });
+        }
+
+        public async Task<IActionResult> GetByOs(string id)
+        {
+            var errors = await _db.ErrorLogs
+                                .Where(w => !w.Processed && w.Os == id)
+                                .OrderByDescending(o => o.Timestamp)
+                                .Take(1000) // TODO - take max 1000 for now... maybe return flag if >1k records
+                                .ToListAsync();
+
+            return Json(new { errors });
+        }
+
+        public async Task<IActionResult> GetByDevice(string id)
+        {
+            var errors = await _db.ErrorLogs
+                                .Where(w => !w.Processed && w.Device == id)
+                                .OrderByDescending(o => o.Timestamp)
+                                .Take(1000) // TODO - take max 1000 for now... maybe return flag if >1k records
+                                .ToListAsync();
+
+            return Json(new { errors });
+        }
+
+        public async Task<IActionResult> GetStackTrace(int id)
+        {
+            var errorLogObj = await _db.ErrorLogs.FindAsync(id);
+            var stackTrace = errorLogObj?.StackTrace ?? "";
+            return Json(new { stackTrace });
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
@@ -42,5 +134,6 @@ namespace Sentinel.Controllers
             _logger.LogError(exceptionHandlerPathFeature.Error, $"Uncaught error for path: {exceptionHandlerPathFeature.Path}");
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
     }
 }

@@ -90,3 +90,17 @@ body {
     background-color: #1e7b34;
     border-color: #1e7b34;
 }
+
+.message-td {
+    max-width: 400px;
+    white-space: pre-wrap;
+}
+
+.message-div {
+    overflow-y: hidden;
+    max-height: 45px;
+}
+
+    .message-div:hover {
+        overflow-y: auto;
+    }

@@ -47,14 +47,6 @@
       ]
     },
     {
-      "library": "font-awesome@5.13.1",
-      "destination": "wwwroot/lib/font-awesome/",
-      "files": [
-        "css/all.min.css",
-        "js/all.min.js"
-      ]
-    },
-    {
       "provider": "jsdelivr",
       "library": "better-dom@4.1.0",
       "destination": "wwwroot/lib/better-dom/",
@@ -70,6 +62,44 @@
       "files": [
         "dist/better-dateinput-polyfill.js",
         "dist/better-dateinput-polyfill.min.js"
+      ]
+    },
+    {
+      "library": "gsap@3.5.1",
+      "destination": "wwwroot/lib/gsap/",
+      "files": [
+        "gsap.min.js"
+      ]
+    },
+    {
+      "library": "vue@2.6.12",
+      "destination": "wwwroot/lib/vue/",
+      "files": [
+        "vue.js",
+        "vue.min.js"
+      ]
+    },
+    {
+      "library": "font-awesome@5.15.1",
+      "destination": "wwwroot/lib/font-awesome/",
+      "files": [
+        "css/all.min.css",
+        "js/all.min.js",
+        "webfonts/fa-brands-400.eot",
+        "webfonts/fa-brands-400.svg",
+        "webfonts/fa-brands-400.ttf",
+        "webfonts/fa-brands-400.woff",
+        "webfonts/fa-brands-400.woff2",
+        "webfonts/fa-regular-400.eot",
+        "webfonts/fa-regular-400.svg",
+        "webfonts/fa-regular-400.ttf",
+        "webfonts/fa-regular-400.woff",
+        "webfonts/fa-regular-400.woff2",
+        "webfonts/fa-solid-900.eot",
+        "webfonts/fa-solid-900.svg",
+        "webfonts/fa-solid-900.ttf",
+        "webfonts/fa-solid-900.woff",
+        "webfonts/fa-solid-900.woff2"
       ]
     }
   ]

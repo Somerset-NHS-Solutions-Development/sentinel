@@ -18,19 +18,19 @@ namespace Sentinel.TagHelpers
 
             if (Os.Contains("windows"))
             {
-                output.Content.SetHtmlContent($"<i class=\"fab fa-windows text-primary\" title=\"Windows {Version}\"></i>");
+                output.Content.SetHtmlContent($"<span data-toggle=\"tooltip\" title=\"Windows {Version}\"><i class=\"fab fa-windows text-primary\"></i></span>");
             }
             else if (Os.Contains("ios"))
             {
-                output.Content.SetHtmlContent($"<i class=\"fab fa-apple text-secondary\" title=\"iOS {Version}\"></i>");
+                output.Content.SetHtmlContent($"<span data-toggle=\"tooltip\" title=\"iOS {Version}\"><i class=\"fab fa-apple text-secondary\"></i></span>");
             }
             else if (Os.Contains("android"))
             {
-                output.Content.SetHtmlContent($"<i class=\"fab fa-android text-success\" title=\"Android {Version}\"></i>");
+                output.Content.SetHtmlContent($"<span data-toggle=\"tooltip\" title=\"Android {Version}\"><i class=\"fab fa-android text-success\"></i></span>");
             }
             else if (Os.Contains("linux"))
             {
-                output.Content.SetHtmlContent($"<i class=\"fab fa-linux\" title=\"Linux {Version}\"></i>");
+                output.Content.SetHtmlContent($"<span data-toggle=\"tooltip\" title=\"Linux {Version}\"><i class=\"fab fa-linux\"></i></span>");
             }
             else
             {

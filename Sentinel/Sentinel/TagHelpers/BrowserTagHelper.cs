@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Razor.TagHelpers;
+﻿using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.AspNetCore.Razor.TagHelpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,35 +12,64 @@ namespace Sentinel.TagHelpers
     {
         public string Browser { get; set; }
         public string Version { get; set; }
+        private IUrlHelperFactory urlHelperFactory;
+        private IActionContextAccessor actionContextAccesor;
+
+        public BrowserTagHelper(IUrlHelperFactory urlHelperFactory, IActionContextAccessor actionContextAccesor)
+        {
+            this.urlHelperFactory = urlHelperFactory;
+            this.actionContextAccesor = actionContextAccesor;
+        }
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
+            var urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccesor.ActionContext);
             Browser = Browser.ToLower();
             output.TagName = "span";
 
             if (Browser.Contains("safari"))
             {
-                output.Content.SetHtmlContent($"<i class=\"fab fa-safari\" title=\"Safari {Version}\"></i>");
+                var url = urlHelper.Content("~/images/safari.png");
+                output.Content.SetHtmlContent($"<span data-toggle=\"tooltip\" title=\"Safari {Version}\"><img width=\"16\" height=\"16\" src=\"{url}\"></img></span>");
             }
             else if (Browser.Contains("firefox"))
             {
-                output.Content.SetHtmlContent($"<i class=\"fab fa-firefox-browser\" title=\"Firefox {Version}\"></i>");
+                var url = urlHelper.Content("~/images/firefox.png");
+                output.Content.SetHtmlContent($"<span data-toggle=\"tooltip\" title=\"Firefox {Version}\"><img width=\"16\" height=\"16\" src=\"{url}\"></img></span>");
             }
             else if (Browser.Contains("chrome"))
             {
-                output.Content.SetHtmlContent($"<i class=\"fab fa-chrome\" title=\"Chrome {Version}\"></i>");
+                var url = urlHelper.Content("~/images/chrome.png");
+                output.Content.SetHtmlContent($"<span data-toggle=\"tooltip\" title=\"Chrome {Version}\"><img width=\"16\" height=\"16\" src=\"{url}\"></img></span>");
             }
             else if (Browser.Contains("edge"))
             {
-                output.Content.SetHtmlContent($"<i class=\"fab fa-edge\" title=\"Edge {Version}\"></i>");
+                var url = urlHelper.Content("~/images/edge.png");
+                output.Content.SetHtmlContent($"<span data-toggle=\"tooltip\" title=\"Edge {Version}\"><img width=\"16\" height=\"16\" src=\"{url}\"></img></span>");
+            }
+            else if (Browser.Contains("samsung internet"))
+            {
+                var url = urlHelper.Content("~/images/samsung-internet.png");
+                output.Content.SetHtmlContent($"<span data-toggle=\"tooltip\" title=\"Samsung Internet {Version}\"><img width=\"16\" height=\"16\" src=\"{url}\"></img></span>");
+            }
+            else if (Browser.Contains("brave"))
+            {
+                var url = urlHelper.Content("~/images/brave.png");
+                output.Content.SetHtmlContent($"<span data-toggle=\"tooltip\" title=\"Brave {Version}\"><img width=\"16\" height=\"16\" src=\"{url}\"></img></span>");
+            }
+            else if (Browser.Contains("uc browser"))
+            {
+                var url = urlHelper.Content("~/images/uc-browser.png");
+                output.Content.SetHtmlContent($"<span data-toggle=\"tooltip\" title=\"Brave {Version}\"><img width=\"16\" height=\"16\" src=\"{url}\"></img></span>");
             }
             else if (Browser == "ie")
             {
-                output.Content.SetHtmlContent($"<i class=\"fab fa-internet-explorer\" title=\"IE {Version}\"></i>");
+                var url = urlHelper.Content("~/images/ie.png");
+                output.Content.SetHtmlContent($"<span data-toggle=\"tooltip\" title=\"IE {Version}\"><img width=\"16\" height=\"16\" src=\"{url}\"></img></span>");
             }
             else
             {
-                output.Content.SetContent(Browser + " " + Version);
+                output.Content.SetHtmlContent($"<i class=\"fab fa-question\" title=\"{Browser} {Version}\"></i>");
             }
         }
     }
