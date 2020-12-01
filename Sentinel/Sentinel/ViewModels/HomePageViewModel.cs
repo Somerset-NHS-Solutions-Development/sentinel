@@ -14,5 +14,6 @@ namespace Sentinel.ViewModels
         public List<string> agents { get; set; }
         public List<string> osList { get; set; }
         public List<string> devices { get; set; }
+        public bool more { get; set; }
     }
 }

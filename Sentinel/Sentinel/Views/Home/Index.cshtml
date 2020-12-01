@@ -48,6 +48,12 @@
     <button id="go-btn" class="btn btn-sm btn-success mr-2">Go</button>
     <button id="reset-btn" class="btn btn-sm btn-warning">Reset</button>
 </div>
+<div id="more-div">
+    @if (Model.more)
+    {
+        <span class="text-danger smaller-text font-italic">More then 1000 records found - use the filters to reduce the size of the results...</span>
+    }
+</div>
 <div id="mark-div" class="mb-2" style="visibility: hidden">
     <button id="mark-btn" class="btn btn-sm btn-danger mr-2">Mark selected items as processed</button>
 </div>
@@ -90,28 +96,29 @@
         let lastCount = 0;
 
         function getFilteredData() {
-                let appName = $("#applications option:selected").val();
-                let userAgent = $("#agents option:selected").val();
-                let os = $("#os-list option:selected").val();
-                let device = $("#devices option:selected").val();
-                let searchText = $("#search-text").val();
-                $.get('@Url.Action("GetData", "Home")?appName=' + appName
-                    + '&userAgent=' + userAgent
-                    + '&os=' + os
-                    + '&device=' + device
-                    + '&searchText=' + searchText
-                    + '&minDate=' + $('#min-date').val()
-                    + '&maxDate=' + $('#max-date').val()
-                )
-                .done((data) => {
-                    $('#error-table').html(data);
-                    updateCounter();
-                    hideShowProcessButton();
-                })
-                .fail((error) => {
-                    console.dir(error);
-                    toastr.error('Error getting data: ' + error.responseText);
-                })
+            $('#more-div').hide();
+            let appName = $("#applications option:selected").val();
+            let userAgent = $("#agents option:selected").val();
+            let os = $("#os-list option:selected").val();
+            let device = $("#devices option:selected").val();
+            let searchText = $("#search-text").val();
+            $.get('@Url.Action("GetData", "Home")?appName=' + appName
+                + '&userAgent=' + userAgent
+                + '&os=' + os
+                + '&device=' + device
+                + '&searchText=' + searchText
+                + '&minDate=' + $('#min-date').val()
+                + '&maxDate=' + $('#max-date').val()
+            )
+            .done((data) => {
+                $('#error-table').html(data);
+                updateCounter();
+                hideShowProcessButton();
+            })
+            .fail((error) => {
+                console.dir(error);
+                toastr.error('Error getting data: ' + error.responseText);
+            })
         }
 
         function updateCounter() {

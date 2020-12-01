@@ -35,10 +35,14 @@ namespace Sentinel.Controllers
                 return View("NotSupported");
             }
 
+            var numRecords = await _db.ErrorLogs
+                                .Where(w => !w.Processed)
+                                .CountAsync();
+
             var errors = await _db.ErrorLogs
                                 .Where(w => !w.Processed)
                                 .OrderByDescending(o => o.Timestamp)
-                                .Take(1000) // TODO - take max 1000 for now... maybe return flag if >1k records
+                                .Take(1000) // Take max 1000 for now... and flag if more available
                                 .ToListAsync();
 
             var applications = await _db.ErrorLogs.Select(s => s.Application).Distinct().ToListAsync();
@@ -52,7 +56,8 @@ namespace Sentinel.Controllers
                 applications = applications,
                 agents = agents,
                 osList = osList,
-                devices = devices
+                devices = devices,
+                more = numRecords > 1000
             };
 
             return View(vm);
