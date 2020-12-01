@@ -28,6 +28,13 @@ namespace Sentinel.Controllers
 
         public async Task<IActionResult> Index()
         {
+            // This page won't work in IE! Check user agent...
+            string userAgent = Request.Headers["User-Agent"];
+            if (IsInternetExplorer(userAgent))
+            {
+                return View("NotSupported");
+            }
+
             var errors = await _db.ErrorLogs
                                 .Where(w => !w.Processed)
                                 .OrderByDescending(o => o.Timestamp)
@@ -114,6 +121,11 @@ namespace Sentinel.Controllers
             }
 
             return Ok();
+        }
+
+        protected static bool IsInternetExplorer(string userAgent)
+        {
+            return userAgent.Contains("MSIE") || userAgent.Contains("Trident");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
