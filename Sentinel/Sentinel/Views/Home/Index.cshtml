@@ -85,6 +85,8 @@
     }
     <script src="~/lib/gsap/gsap.min.js"></script>
     <script asp-add-nonce="true">
+        let lastCount = 0;
+
         function getFilteredData() {
                 let appName = $("#applications option:selected").val();
                 let userAgent = $("#agents option:selected").val();
@@ -110,12 +112,15 @@
 
         function updateCounter() {
             let count = $('tbody tr').length;
-            var obj = { current: 0 };
+            var obj = { current: lastCount };
             gsap.to(obj, {
                 duration: 1.5,
                 current: count,
                 onUpdate: function () {
                     $('#count').html(Math.round(obj.current));
+                },
+                onComplete: function () {
+                    lastCount = count;
                 }
             });
         }

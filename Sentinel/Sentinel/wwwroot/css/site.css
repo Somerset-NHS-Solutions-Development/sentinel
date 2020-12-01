@@ -97,10 +97,14 @@ body {
 }
 
 .message-div {
-    overflow-y: hidden;
+    white-space: nowrap;
+    overflow-x: hidden;
+    text-overflow: ellipsis;
     max-height: 45px;
+    max-width: 400px;
 }
 
     .message-div:hover {
-        overflow-y: auto;
+        text-overflow: clip;
+        overflow-x: auto;
     }
