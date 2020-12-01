@@ -58,7 +58,7 @@ namespace Sentinel.Controllers
             return View(vm);
         }
 
-        public async Task<IActionResult> GetData(string appName, string userAgent, string os, string device, DateTime? minDate = null, DateTime? maxDate = null)
+        public async Task<IActionResult> GetData(string appName, string userAgent, string os, string device, string searchText, DateTime? minDate = null, DateTime? maxDate = null)
         {
             var errors = _db.ErrorLogs
                             .Where(w => !w.Processed);
@@ -78,6 +78,10 @@ namespace Sentinel.Controllers
             if (!String.IsNullOrEmpty(device))
             {
                 errors = errors.Where(w => w.Device == device);
+            }
+            if (!String.IsNullOrEmpty(searchText))
+            {
+                errors = errors.Where(w => w.Message.Contains(searchText));
             }
             if (minDate.HasValue)
             {

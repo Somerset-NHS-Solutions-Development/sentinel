@@ -8,11 +8,13 @@
 <div class="d-flex flex-nowrap mb-2">
     <span class="font-italic mr-1">Found</span>
     <span id="count" class="font-italic mr-1"></span>
-    <span class="font-italic mr-3">records</span>
+    <span id="records-text" class="font-italic mr-3">records</span>
     <span class="text-nowrap mr-2">Filter from</span>
     <input type="date" id="min-date" class="form-control form-control-sm mr-2" />
     <span class="mr-2">to</span>
-    <input type="date" id="max-date" class="form-control form-control-sm" />
+    <input type="date" id="max-date" class="form-control form-control-sm mr-3" />
+    <span class="text-nowrap mr-2">Containing text:</span>
+    <input type="text" id="search-text" placeholder="Enter search text..." class="form-control form-control-sm" />
 </div>
 <div class="d-flex mb-2">
     <select id="applications" class="options-dropdown form-control form-control-sm mr-2">
@@ -92,10 +94,12 @@
                 let userAgent = $("#agents option:selected").val();
                 let os = $("#os-list option:selected").val();
                 let device = $("#devices option:selected").val();
+                let searchText = $("#search-text").val();
                 $.get('@Url.Action("GetData", "Home")?appName=' + appName
                     + '&userAgent=' + userAgent
                     + '&os=' + os
                     + '&device=' + device
+                    + '&searchText=' + searchText
                     + '&minDate=' + $('#min-date').val()
                     + '&maxDate=' + $('#max-date').val()
                 )
@@ -112,12 +116,18 @@
 
         function updateCounter() {
             let count = $('tbody tr').length;
-            var obj = { current: lastCount };
+            let obj = { current: lastCount };
             gsap.to(obj, {
                 duration: 1.5,
                 current: count,
                 onUpdate: function () {
-                    $('#count').html(Math.round(obj.current));
+                    let countAsInt = Math.round(obj.current);
+                    $('#count').html(countAsInt);
+                    if (countAsInt == 1) {
+                        $('#records-text').html('record');
+                    } else {
+                        $('#records-text').html('records');
+                    }
                 },
                 onComplete: function () {
                     lastCount = count;
@@ -161,6 +171,7 @@
                 $('.options-dropdown').val('');
                 $('#min-date').val('');
                 $('#max-date').val('');
+                $("#search-text").val('');
             })
             $('body').on('change', '.event-checkbox', (event) => {
                 hideShowProcessButton();
@@ -178,7 +189,7 @@
                 $('.event-checkbox:checked').each((index, element) => {
                     idArray.push($(element).data('id'));
                 })
-                var postData = { ids: idArray };
+                let postData = { ids: idArray };
                 $.post('@Url.Action("MarkAsProcessed", "Home")', $.param(postData, true))
                     .done(() => {
                         getFilteredData();
