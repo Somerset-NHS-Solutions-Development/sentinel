@@ -9,5 +9,17 @@
       "renameLocals": true
     },
     "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/sentinel-vue.min.js",
+    "inputFiles": [
+      "wwwroot/js/sentinel-vue.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
   }
+
 ]

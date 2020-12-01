@@ -33,6 +33,7 @@ namespace Sentinel.Controllers
                                 .OrderByDescending(o => o.Timestamp)
                                 .Take(1000) // TODO - take max 1000 for now... maybe return flag if >1k records
                                 .ToListAsync();
+
             var applications = await _db.ErrorLogs.Select(s => s.Application).Distinct().ToListAsync();
             var agents = await _db.ErrorLogs.Select(s => s.UserAgent).Distinct().ToListAsync();
             var osList = await _db.ErrorLogs.Select(s => s.Os).Distinct().ToListAsync();

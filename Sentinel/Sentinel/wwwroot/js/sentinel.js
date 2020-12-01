@@ -2,11 +2,11 @@
 
     var applicationName = 'UNKNOWN';
 
-    var internalInit = function (applicationName) {
-        var scripts = document.getElementsByTagName("script");
-        var fullUrl = scripts[scripts.length - 1].src;
-        var replaceIndex = fullUrl.indexOf('js/');
-        var baseUrl = fullUrl.substring(0, replaceIndex);
+    var internalInit = function () {
+        let scripts = document.getElementsByTagName("script");
+        let fullUrl = scripts[scripts.length - 1].src;
+        let replaceIndex = fullUrl.indexOf('js/');
+        let baseUrl = fullUrl.substring(0, replaceIndex);
         window.onerror = function (message, source, lineno, colno, error) {
             handleError(message, source, lineno, colno, error, null, baseUrl);
             return true;
@@ -38,7 +38,8 @@
 
     return {
         internalInit: internalInit,
-        init: init
+        init: init,
+        handleError: handleError
     }
 })();
 
