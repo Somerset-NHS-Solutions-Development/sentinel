@@ -54,8 +54,7 @@ namespace Sentinel.Models
                     .HasColumnName("OSVersion");
 
                 entity.Property(e => e.Source)
-                    .IsRequired()
-                    .HasMaxLength(250);
+                    .IsRequired();
 
                 entity.Property(e => e.Timestamp).HasColumnType("datetime");
 

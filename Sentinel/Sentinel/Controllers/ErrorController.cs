@@ -39,6 +39,11 @@ namespace Sentinel.Controllers
                 var uaParser = Parser.GetDefault();
                 ClientInfo ci = uaParser.Parse(jError.agent);
 
+                // Check col/line number are numeric
+                int lineNoAsInt = 0, colNoAsInt = 0;
+                int.TryParse(jError.lineno, out lineNoAsInt);
+                int.TryParse(jError.colno, out colNoAsInt);
+
                 ErrorLog el = new ErrorLog
                 {
                     Timestamp = DateTime.UtcNow,
@@ -50,10 +55,10 @@ namespace Sentinel.Controllers
                     Osversion = ci.OS.Major,
                     Device = ci.Device.Family,
                     VueInfo = jError.vueinfo,
-                    Message = jError.message,
-                    Source = jError.source,
-                    Line = jError.lineno,
-                    Col = jError.colno,
+                    Message = jError.message.ToString(),
+                    Source = jError.source.ToString(),
+                    Line = lineNoAsInt,
+                    Col = colNoAsInt,
                     StackTrace = jError.stack,
                     Processed = false
 

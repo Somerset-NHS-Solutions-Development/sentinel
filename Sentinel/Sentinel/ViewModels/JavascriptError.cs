@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,10 +9,11 @@ namespace Sentinel.ViewModels
     public class JavascriptError
     {
         public string applicationName { get; set; }
-        public string message { get; set; }
-        public string source { get; set; }
-        public int lineno { get; set; }
-        public int colno { get; set; }
+        // Define these two as JTokens as datatables puts JSON into these fields
+        public JToken message { get; set; }
+        public JToken source { get; set; }
+        public string lineno { get; set; }
+        public string colno { get; set; }
         public string stack { get; set; }
         public string vueinfo { get; set; }
         public string agent { get; set; }
