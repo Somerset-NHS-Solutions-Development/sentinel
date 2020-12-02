@@ -40,9 +40,14 @@ namespace Sentinel.Controllers
                 ClientInfo ci = uaParser.Parse(jError.agent);
 
                 // Check col/line number are numeric
+                string message = jError.message.ToString();
                 int lineNoAsInt = 0, colNoAsInt = 0;
                 int.TryParse(jError.lineno, out lineNoAsInt);
-                int.TryParse(jError.colno, out colNoAsInt);
+                // This is for datatables which stuffs an error message in the column field!
+                if (!int.TryParse(jError.colno, out colNoAsInt))
+                {
+                    message = $"{jError.colno} {message}";
+                }
 
                 ErrorLog el = new ErrorLog
                 {
@@ -55,7 +60,7 @@ namespace Sentinel.Controllers
                     Osversion = ci.OS.Major,
                     Device = ci.Device.Family,
                     VueInfo = jError.vueinfo,
-                    Message = jError.message.ToString(),
+                    Message = message,
                     Source = jError.source.ToString(),
                     Line = lineNoAsInt,
                     Col = colNoAsInt,
