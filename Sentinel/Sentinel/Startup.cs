@@ -59,13 +59,13 @@ namespace Sentinel
 
             //services.AddTransient<IEmailService, EmailService>();
 
-
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
             services.AddRazorPages();
 
-            // IP rate limting
             services.AddOptions();
             services.AddMemoryCache();
+
+            // IP rate limting
             services.Configure<IpRateLimitOptions>(Configuration.GetSection("IpRateLimiting"));
             services.AddSingleton<IIpPolicyStore, MemoryCacheIpPolicyStore>();
             services.AddSingleton<IRateLimitCounterStore, MemoryCacheRateLimitCounterStore>();
@@ -115,14 +115,10 @@ namespace Sentinel
                 csp.AllowScripts
                         .FromSelf()
                         .AddNonce()
-                        .From("kit.fontawesome.com")
-                        .From("cdn.datatables.net")
                         .From("ajax.aspnetcdn.com")
                         .AllowUnsafeInline(); // NOTE - this will be IGNORED by browsers that recognise the nonce but is needed for Safari compatibility
                 csp.AllowStyles
                         .FromSelf()
-                        .From("kit-free.fontawesome.com")
-                        .From("cdn.datatables.net")
                         .From("ajax.aspnetcdn.com")
                         .AllowUnsafeInline(); // Needed for font-awesome
             }); // Content-Security-Policy, uses Joonasw.AspNetCore.SecurityHeaders
