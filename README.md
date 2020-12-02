@@ -20,9 +20,10 @@ Include this on every page of your application:
 `Sentinel.init('MY_APPLICATION_NAME');`
 
 You may need to update the CSP for your site accordingly, by adding ydh-watchdog.ydh.nhs.uk to the list of domains
-that it allows scripts to be loaded from.
+that it allows scripts to be loaded from. 
 
-Any errors will be sent to the Sentinel server, these can be viewed at [https://ydh-watchdog.ydh.nhs.uk/Sentinel](https://ydh-watchdog.ydh.nhs.uk/Sentinel)
+Any errors will be sent to the Sentinel server, these can be viewed at [https://ydh-watchdog.ydh.nhs.uk/Sentinel](https://ydh-watchdog.ydh.nhs.uk/Sentinel). **Note:** the script always sends errors back to the location where the script was
+loaded from, so this doesn't need to be specified separately.
 
 ## Vue.js integration ##
 
@@ -43,17 +44,29 @@ Active directory authentication is used for logins. Additional users can be adde
 
 ## Development ##
 
-To do any development you will need to install Visual Studio 2019 (16.8+). Then just open Sentinel.sln from within 
-Visual Studio. This application targets .NET 5.0.
+To do any development you will need to install Visual Studio 2019 (16.8+). Clone the repository and 
+then just open Sentinel.sln from within Visual Studio. You will need to 
+grab a copy of the appsettings.*.json files from it's current installation on ydh-watchdog, 
+and put these in the Sentinel folder (next to appsettings.json). 
+
+For development purposes you should make your own copy of the database, 
+and alter the connection string in appsettings.Development.json accordingly.
+
+You can then test it by running any web application, but instead of including a link
+to https://ydh-watchdog.ydh.nhs.uk/Sentinel/js/sentinel.min.js as described above, include a link to your instance
+running on localhost, i.e. https://localhost:XXXXX/js/sentinel.min.js
+
+This application targets .NET 5.0, hence the requirement for version 16.8+ of Visual Studio.
+
 As part of the build it runs a minifier on the sentinel.js and sentinel-vue.js scripts (see bundleconfig.json),
 although it doesn't bother rebuilding unless a change has been made to the C# code.
 
 ## Deployment
 
-The project has been set up with web deployment configured for watchdog. In order
+The project has been set up with web deployment configured for ydh-watchdog. In order
 to use this you will need to ensure that permissions have been set up in IIS:
 
-Click on the CovidAbsence application in IIS, then on IIS Manager Permissions. 
+Click on the Sentinel application in IIS, then on IIS Manager Permissions. 
 Click on "Allow User..." to add yourself to the list. Then click the "YDH-WATCHDOG"
 root node, then Management Service. Stop the service, add your IP address to the
 list and start the service again.
