@@ -24,7 +24,7 @@
             source: source,
             lineno: lineno,
             colno: colno,
-            stack: error.stack,
+            stack: error ? error.stack : '',
             vueinfo: vueinfo,
             agent: window.navigator.userAgent,
             platform: window.navigator.platform
