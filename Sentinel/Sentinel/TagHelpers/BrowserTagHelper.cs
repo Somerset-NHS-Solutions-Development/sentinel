@@ -12,8 +12,8 @@ namespace Sentinel.TagHelpers
     {
         public string Browser { get; set; }
         public string Version { get; set; }
-        private IUrlHelperFactory urlHelperFactory;
-        private IActionContextAccessor actionContextAccesor;
+        private readonly IUrlHelperFactory urlHelperFactory;
+        private readonly IActionContextAccessor actionContextAccesor;
 
         public BrowserTagHelper(IUrlHelperFactory urlHelperFactory, IActionContextAccessor actionContextAccesor)
         {

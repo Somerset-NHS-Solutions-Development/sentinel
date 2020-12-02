@@ -8,6 +8,7 @@ namespace Sentinel.ViewModels
 {
     public class JavascriptError
     {
+#pragma warning disable IDE1006
         public string applicationName { get; set; }
         // Define these two as JTokens as datatables puts JSON into these fields
         public JToken message { get; set; }
@@ -18,5 +19,6 @@ namespace Sentinel.ViewModels
         public string vueinfo { get; set; }
         public string agent { get; set; }
         public string platform { get; set; }
+#pragma warning restore IDE1006
     }
 }

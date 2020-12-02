@@ -41,10 +41,9 @@ namespace Sentinel.Controllers
 
                 // Check col/line number are numeric
                 string message = jError.message.ToString();
-                int lineNoAsInt = 0, colNoAsInt = 0;
-                int.TryParse(jError.lineno, out lineNoAsInt);
+                _ = int.TryParse(jError.lineno, out int lineNoAsInt);
                 // This is for datatables which stuffs an error message in the column field!
-                if (!int.TryParse(jError.colno, out colNoAsInt))
+                if (!int.TryParse(jError.colno, out int colNoAsInt))
                 {
                     message = $"{jError.colno} {message}";
                 }
@@ -66,12 +65,10 @@ namespace Sentinel.Controllers
                     Col = colNoAsInt,
                     StackTrace = jError.stack,
                     Processed = false
-
                 };
 
                 _db.ErrorLogs.Add(el);
                 await _db.SaveChangesAsync();
-
             }
             catch (Exception ex)
             {

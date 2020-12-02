@@ -11,7 +11,7 @@ namespace Sentinel.Identity
 {
     public class LdapRoleStore : IRoleStore<Role>
     {
-        private ApplicationContext _db;
+        private readonly ApplicationContext _db;
 
         public LdapRoleStore(ApplicationContext db)
         {
@@ -21,7 +21,7 @@ namespace Sentinel.Identity
         public async Task<IdentityResult> CreateAsync(Role role, CancellationToken cancellationToken)
         {
             _db.Role.Add(role);
-            await _db.SaveChangesAsync();
+            await _db.SaveChangesAsync(CancellationToken.None);
 
             return IdentityResult.Success;
         }
@@ -29,7 +29,7 @@ namespace Sentinel.Identity
         public async Task<IdentityResult> UpdateAsync(Role role, CancellationToken cancellationToken)
         {
             _db.Entry(role).State = EntityState.Modified;
-            await _db.SaveChangesAsync();
+            await _db.SaveChangesAsync(CancellationToken.None);
 
             return IdentityResult.Success;
         }
@@ -37,7 +37,7 @@ namespace Sentinel.Identity
         public async Task<IdentityResult> DeleteAsync(Role role, CancellationToken cancellationToken)
         {
             _db.Role.Remove(role);
-            await _db.SaveChangesAsync();
+            await _db.SaveChangesAsync(CancellationToken.None);
 
             return IdentityResult.Success;
         }
@@ -56,7 +56,7 @@ namespace Sentinel.Identity
         {
             role.Name = roleName;
             _db.Entry(role).State = EntityState.Modified;
-            await _db.SaveChangesAsync();
+            await _db.SaveChangesAsync(CancellationToken.None);
 
             return;
         }
@@ -71,13 +71,12 @@ namespace Sentinel.Identity
             return SetRoleNameAsync(role, normalizedName, cancellationToken);
         }
 
-
         public async Task<Role> FindByIdAsync(string roleId, CancellationToken cancellationToken)
         {
             try
             {
                 int roleIdAsInt = Int32.Parse(roleId);
-                var role = await _db.Role.FindAsync(roleIdAsInt);
+                var role = await _db.Role.FindAsync(new object[] { roleIdAsInt }, CancellationToken.None);
                 return role;
             }
             catch (Exception)
@@ -88,13 +87,14 @@ namespace Sentinel.Identity
 
         public async Task<Role> FindByNameAsync(string normalizedRoleName, CancellationToken cancellationToken)
         {
-            var role = await _db.Role.Where(w => w.Name == normalizedRoleName).FirstOrDefaultAsync();
+            var role = await _db.Role.Where(w => w.Name == normalizedRoleName).FirstOrDefaultAsync(CancellationToken.None);
 
             return role;
         }
 
         public void Dispose()
         {
+            GC.SuppressFinalize(this);
         }
     }
 }

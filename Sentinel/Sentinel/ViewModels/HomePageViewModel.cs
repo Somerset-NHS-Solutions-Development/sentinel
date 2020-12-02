@@ -9,11 +9,11 @@ namespace Sentinel.ViewModels
 {
     public class HomePageViewModel
     {
-        public List<ErrorLog> errors { get; set; }
-        public List<string> applications { get; set; }
-        public List<string> agents { get; set; }
-        public List<string> osList { get; set; }
-        public List<string> devices { get; set; }
-        public bool more { get; set; }
+        public List<ErrorLog> Errors { get; set; }
+        public List<string> Applications { get; set; }
+        public List<string> Agents { get; set; }
+        public List<string> OsList { get; set; }
+        public List<string> Devices { get; set; }
+        public bool More { get; set; }
     }
 }

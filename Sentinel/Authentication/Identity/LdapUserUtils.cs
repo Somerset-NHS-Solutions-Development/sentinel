@@ -8,9 +8,11 @@ using System.Threading.Tasks;
 
 namespace Sentinel.Identity
 {
+#pragma warning disable RCS1102
     public class LdapUserUtils
+#pragma warning restore RCS1102
     {
-        public static User GetUserRecord(ClaimsPrincipal principal, ApplicationContext db)
+    public static User GetUserRecord(ClaimsPrincipal principal, ApplicationContext db)
         {
             var userId = principal.FindFirst(ClaimTypes.NameIdentifier).Value;
             var user = db.User.Find(userId);

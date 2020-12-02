@@ -19,28 +19,28 @@
 <div class="d-flex mb-2">
     <select id="applications" class="options-dropdown form-control form-control-sm mr-2">
         <option value="">-- All applications --</option>
-        @foreach (var item in Model.applications)
+        @foreach (var item in Model.Applications)
         {
             <option>@item</option>
         }
     </select>
     <select id="agents" class="options-dropdown form-control form-control-sm mr-2">
         <option value="">-- All user agents --</option>
-        @foreach (var item in Model.agents)
+        @foreach (var item in Model.Agents)
         {
             <option>@item</option>
         }
     </select>
     <select id="os-list" class="options-dropdown form-control form-control-sm mr-2">
         <option value="">-- All OS --</option>
-        @foreach (var item in Model.osList)
+        @foreach (var item in Model.OsList)
         {
             <option>@item</option>
         }
     </select>
     <select id="devices" class="options-dropdown form-control form-control-sm mr-2">
         <option value="">-- All devices --</option>
-        @foreach (var item in Model.devices)
+        @foreach (var item in Model.Devices)
         {
             <option>@item</option>
         }
@@ -49,7 +49,7 @@
     <button id="reset-btn" class="btn btn-sm btn-warning">Reset</button>
 </div>
 <div id="more-div">
-    @if (Model.more)
+    @if (Model.More)
     {
         <span class="text-danger smaller-text font-italic">More then 1000 records found - use the filters to reduce the size of the results...</span>
     }
@@ -59,7 +59,7 @@
 </div>
 
 <div id="error-table">
-    <partial name="_partialErrorData.cshtml" for="errors">
+    <partial name="_partialErrorData.cshtml" for="Errors">
 </div>
 
 <div class="modal" id="stack-trace-modal" tabindex="-1">

@@ -51,13 +51,13 @@ namespace Sentinel.Controllers
             var devices = await _db.ErrorLogs.Select(s => s.Device).Distinct().ToListAsync();
 
             HomePageViewModel vm = new HomePageViewModel
-            { 
-                errors = errors,
-                applications = applications,
-                agents = agents,
-                osList = osList,
-                devices = devices,
-                more = numRecords > 1000
+            {
+                Errors = errors,
+                Applications = applications,
+                Agents = agents,
+                OsList = osList,
+                Devices = devices,
+                More = numRecords > 1000
             };
 
             return View(vm);
@@ -144,6 +144,5 @@ namespace Sentinel.Controllers
             _logger.LogError(exceptionHandlerPathFeature.Error, $"Uncaught error for path: {exceptionHandlerPathFeature.Path}");
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
-
     }
 }

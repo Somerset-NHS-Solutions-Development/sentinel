@@ -74,10 +74,7 @@ namespace Sentinel
 
             services.Configure<ApplicationOptions>(Configuration.GetSection("ApplicationOptions"));
 
-            services.AddAuthorization(options =>
-            {
-                options.AddPolicy("TestPolicy", policy => policy.RequireClaim("SQLDBA"));
-            });
+            services.AddAuthorization(options => options.AddPolicy("TestPolicy", policy => policy.RequireClaim("SQLDBA")));
 
             services.AddCors(options =>
             {
