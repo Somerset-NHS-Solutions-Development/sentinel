@@ -31,4 +31,41 @@ anywhere after the main Sentinel script:
 
 `<script src="https://ydh-watchdog.ydh.nhs.uk/Sentinel/js/sentinel-vue.min.js"></script>`
 
+## Databases ##
 
+The production instance uses the Sentinel database on maildog. Login details for the application are in 
+appsettings.Production.json - a copy of this will need to be taken from ydh-watchdog, as it's not in source control.
+The database is extremely simple so should work on any relatively recent version of SQL Server.
+
+## Authentication ##
+
+Active directory authentication is used for logins. Additional users can be added on the User Admin page.
+
+## Development ##
+
+To do any development you will need to install Visual Studio 2019 (16.8+). Then just open Sentinel.sln from within 
+Visual Studio. This application targets .NET 5.0.
+As part of the build it runs a minifier on the sentinel.js and sentinel-vue.js scripts (see bundleconfig.json),
+although it doesn't bother rebuilding unless a change has been made to the C# code.
+
+## Deployment
+
+The project has been set up with web deployment configured for watchdog. In order
+to use this you will need to ensure that permissions have been set up in IIS:
+
+Click on the CovidAbsence application in IIS, then on IIS Manager Permissions. 
+Click on "Allow User..." to add yourself to the list. Then click the "YDH-WATCHDOG"
+root node, then Management Service. Stop the service, add your IP address to the
+list and start the service again.
+
+To deploy, right-click on the Sentinel project in Solution Explorer, and select "Publish..."
+Ensure "Watchdog" is selected as the publish profile and click Publish. If there is an error,
+try clicking Edit, then "Validate Connection", If this works, cancel and deploy again.
+If not you may have to fix the permissions as described above.
+
+It could potentially be deployed to other locations, Watchdog uses IIS 10 with the following add-ons:
+- Build Tools for Visual Studio 2019
+- .NET Core hosting bundle
+- WebDeploy
+
+Note that it can't be deployed to a Linux server as the code used for the AD logins is Windows-specific.
