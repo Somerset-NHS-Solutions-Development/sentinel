@@ -108,3 +108,8 @@ body {
         text-overflow: clip;
         overflow-x: auto;
     }
+
+.max-height-350 {
+    max-height: 350px;
+    overflow-y: auto;
+}
