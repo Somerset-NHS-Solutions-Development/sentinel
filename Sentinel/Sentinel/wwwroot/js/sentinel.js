@@ -28,7 +28,7 @@
             vueinfo: vueinfo,
             agent: window.navigator.userAgent,
             platform: window.navigator.platform,
-            url: window.location.pathname + window.location.search
+            url: window.location.href
         };
         var xhr = new XMLHttpRequest();
         var url = baseUrl + 'Error/PostError';
