@@ -23,5 +23,6 @@ namespace Sentinel.Models
         public int Col { get; set; }
         public string StackTrace { get; set; }
         public bool Processed { get; set; }
+        public string Url { get; set; }
     }
 }

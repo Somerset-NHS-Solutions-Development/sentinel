@@ -111,6 +111,13 @@ namespace Sentinel.Controllers
             return Json(new { stackTrace });
         }
 
+        public async Task<IActionResult> GetSource(int id)
+        {
+            var errorLogObj = await _db.ErrorLogs.FindAsync(id);
+            var source = errorLogObj?.Source ?? "";
+            return Json(new { source });
+        }
+
         [HttpPost]
         public async Task<IActionResult> MarkAsProcessed(List<int> ids)
         {

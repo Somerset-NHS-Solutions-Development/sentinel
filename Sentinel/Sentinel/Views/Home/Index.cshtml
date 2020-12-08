@@ -81,6 +81,44 @@
     </div>
 </div>
 
+<div class="modal" id="source-modal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Source</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <code id="source-content" class="smaller-text"></code>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="url-modal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">URL</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <code id="url-content" class="smaller-text"></code>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 @section Scripts {
     @if (hostingEnv.EnvironmentName == "Production")
@@ -161,7 +199,6 @@
 
             $('body').on('click', '.view-stack-trace', (event) => {
                 let id = $(event.currentTarget).data('id');
-                console.log('id=' + id);
                 $.get('@Url.Action("GetStackTrace", "Home")/' + id)
                     .done((data) => {
                         $('#stack-trace-content').html(data.stackTrace);
@@ -170,6 +207,22 @@
                     .fail((error) => {
                         toastr.error('Error getting stack trace: ' + error);
                     })
+            })
+            $('body').on('click', '.view-source', (event) => {
+                let id = $(event.currentTarget).data('id');
+                $.get('@Url.Action("GetSource", "Home")/' + id)
+                    .done((data) => {
+                        $('#source-content').html(data.source);
+                        $('#source-modal').modal('show');
+                    })
+                    .fail((error) => {
+                        toastr.error('Error getting source: ' + error);
+                    })
+            })
+            $('body').on('click', '.view-url', (event) => {
+                let url = $(event.currentTarget).data('url');
+                $('#url-content').html(url);
+                $('#url-modal').modal('show');
             })
             $('#go-btn').click((event) => {
                 getFilteredData();

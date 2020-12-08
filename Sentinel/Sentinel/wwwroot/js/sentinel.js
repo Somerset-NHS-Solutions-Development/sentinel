@@ -27,7 +27,8 @@
             stack: error ? error.stack : '',
             vueinfo: vueinfo,
             agent: window.navigator.userAgent,
-            platform: window.navigator.platform
+            platform: window.navigator.platform,
+            url: window.location.pathname + window.location.search
         };
         var xhr = new XMLHttpRequest();
         var url = baseUrl + 'Error/PostError';

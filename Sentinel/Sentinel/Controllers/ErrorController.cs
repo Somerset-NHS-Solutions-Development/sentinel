@@ -64,6 +64,7 @@ namespace Sentinel.Controllers
                     Line = lineNoAsInt,
                     Col = colNoAsInt,
                     StackTrace = jError.stack,
+                    Url = jError.url,
                     Processed = false
                 };
 

@@ -19,6 +19,7 @@ namespace Sentinel.ViewModels
         public string vueinfo { get; set; }
         public string agent { get; set; }
         public string platform { get; set; }
+        public string url { get; set; }
 #pragma warning restore IDE1006
     }
 }
