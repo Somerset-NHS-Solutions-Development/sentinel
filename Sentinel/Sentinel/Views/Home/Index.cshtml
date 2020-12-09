@@ -201,7 +201,7 @@
                 let id = $(event.currentTarget).data('id');
                 $.get('@Url.Action("GetStackTrace", "Home")/' + id)
                     .done((data) => {
-                        $('#stack-trace-content').html(data.stackTrace.replace('\n', '<br/>'));
+                        $('#stack-trace-content').html(data.stackTrace.replace(new RegExp('\r?\n', 'g'), '<br />'));
                         $('#stack-trace-modal').modal('show');
                     })
                     .fail((error) => {
