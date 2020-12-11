@@ -22,8 +22,18 @@ Include this on every page of your application:
 You may need to update the CSP for your site accordingly, by adding ydh-watchdog.ydh.nhs.uk to the list of domains
 that it allows scripts to be loaded from. 
 
-Any errors will be sent to the Sentinel server, these can be viewed at [https://ydh-watchdog.ydh.nhs.uk/Sentinel](https://ydh-watchdog.ydh.nhs.uk/Sentinel). **Note:** the script always sends errors back to the location where the script was
+Any errors will be sent to the Sentinel server, these can be viewed at [https://ydh-watchdog.ydh.nhs.uk/Sentinel](https://ydh-watchdog.ydh.nhs.uk/Sentinel). The script always sends errors back to the location where the script was
 loaded from, so this doesn't need to be specified separately.
+
+### Note on cross-domain scripts ###
+
+If an error occurs in a third-party script that is loaded from another domain, for example from a CDN,
+the error information won't get populated and you will end up with a generic "script error" and no other information.
+
+To fix this, two things are required - firstly add `crossorigin="anonymous"` to the script tag.
+Secondly, the server that serves this script must add the `Access-control-allow-origin: *` header to the response.
+
+The other option is to download the script and serve it locally from the same domain.
 
 ## Vue.js integration ##
 
