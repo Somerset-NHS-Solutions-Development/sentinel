@@ -126,23 +126,18 @@ namespace Sentinel.Controllers
             if (!String.IsNullOrEmpty(stackTrace))
             {
                 // Parse the stack trace to find out which file caused the error
-                // **** REFACTOR - TODO
-                Regex rgx = new Regex(@"(?<=\()(.*):([0-9]*):[0-9]*\)");
-                var match = rgx.Match(stackTrace);
-                var url = match?.Groups?[1]?.Value;
-                Int32.TryParse(match?.Groups?[2]?.Value, out int line);
-                vm.line = line;
+                (vm.url, vm.line) = ExtractUrlAndLineNumber(stackTrace);
 
-                if (url != null)
+                if (vm.url != null)
                 {
                     // Fetch the file
                     var httpClient = _clientFactory.CreateClient();
                     try
                     {
-                        var response = await httpClient.GetAsync(url);
+                        var response = await httpClient.GetAsync(vm.url);
                         vm.code = response.IsSuccessStatusCode ? await response.Content.ReadAsStringAsync() : "Unable to fetch code";
-                        // Check if it's JavaScript
-                        vm.url = url.Split('?')[0];
+                        // Remove any query string from the URL and check if it's JavaScript
+                        vm.url = vm.url.Split('?')[0];
                         if (vm.url.EndsWith(".js", StringComparison.OrdinalIgnoreCase))
                         {
                             vm.lang = "js";
@@ -150,7 +145,7 @@ namespace Sentinel.Controllers
                     }
                     catch (Exception)
                     {
-                        _logger.LogWarning($"Unable to retrieve code from {url}");
+                        _logger.LogWarning($"Unable to retrieve code from {vm.url}");
                     }
                 }
             }
@@ -189,6 +184,17 @@ namespace Sentinel.Controllers
         protected static bool IsInternetExplorer(string userAgent)
         {
             return userAgent.Contains("MSIE") || userAgent.Contains("Trident");
+        }
+
+        protected (string, int) ExtractUrlAndLineNumber(string stackTrace)
+        {
+            // Look for the first (url:line:column) pattern in the stack trace
+            Regex rgx = new Regex(@"(?<=\()(.*):([0-9]*):[0-9]*\)");
+            var match = rgx.Match(stackTrace);
+            var url = match?.Groups?[1]?.Value;
+            _ = Int32.TryParse(match?.Groups?[2]?.Value, out int line);
+
+            return (url, line);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
