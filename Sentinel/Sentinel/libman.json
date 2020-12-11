@@ -101,6 +101,35 @@
         "webfonts/fa-solid-900.woff",
         "webfonts/fa-solid-900.woff2"
       ]
+    },
+    {
+      "library": "prism@1.22.0",
+      "destination": "wwwroot/lib/prism/",
+      "files": [
+        "prism.min.js",
+        "prism.js"
+      ]
+    },
+    {
+      "library": "prism@1.22.0",
+      "destination": "wwwroot/lib/prism/",
+      "files": [
+        "prism.min.js",
+        "plugins/line-highlight/prism-line-highlight.min.css",
+        "plugins/line-highlight/prism-line-highlight.min.js",
+        "plugins/line-numbers/prism-line-numbers.min.css",
+        "plugins/line-numbers/prism-line-numbers.min.js",
+        "themes/prism-okaidia.min.css"
+      ]
     }
+  ,
+{
+  "library": "jquery@3.5.1",
+  "destination": "wwwroot/lib/jquery/",
+  "files": [
+    "jquery.min.js",
+    "jquery.min.map"
   ]
+}
+]
 }

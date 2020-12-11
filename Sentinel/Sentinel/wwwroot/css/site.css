@@ -82,6 +82,10 @@ body {
     font-size: smaller;
 }
 
+.larger-text {
+    font-size: larger;
+}
+
 .x-large-text {
     font-size: x-large;
 }

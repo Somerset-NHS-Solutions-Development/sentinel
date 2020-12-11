@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Authorization;
 using Sentinel.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Text.RegularExpressions;
+using System.Net.Http;
 
 namespace Sentinel.Controllers
 {
@@ -19,11 +21,13 @@ namespace Sentinel.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly SentinelContext _db;
+        private readonly IHttpClientFactory _clientFactory;
 
-        public HomeController(ILogger<HomeController> logger, SentinelContext db)
+        public HomeController(ILogger<HomeController> logger, SentinelContext db, IHttpClientFactory clientFactory)
         {
             _logger = logger;
             _db = db;
+            _clientFactory = clientFactory;
         }
 
         public async Task<IActionResult> Index()
@@ -109,6 +113,49 @@ namespace Sentinel.Controllers
             var errorLogObj = await _db.ErrorLogs.FindAsync(id);
             var stackTrace = errorLogObj?.StackTrace ?? "";
             return Json(new { stackTrace });
+        }
+
+        public async Task<IActionResult> ViewCode(int id)
+        {
+            ViewCodeModel vm = new ViewCodeModel();
+            vm.lang = "markup";
+            vm.code = "Unable to fetch code";
+            var errorLogObj = await _db.ErrorLogs.FindAsync(id);
+            var stackTrace = errorLogObj?.StackTrace;
+
+            if (!String.IsNullOrEmpty(stackTrace))
+            {
+                // Parse the stack trace to find out which file caused the error
+                // **** REFACTOR - TODO
+                Regex rgx = new Regex(@"(?<=\()(.*):([0-9]*):[0-9]*\)");
+                var match = rgx.Match(stackTrace);
+                var url = match?.Groups?[1]?.Value;
+                Int32.TryParse(match?.Groups?[2]?.Value, out int line);
+                vm.line = line;
+
+                if (url != null)
+                {
+                    // Fetch the file
+                    var httpClient = _clientFactory.CreateClient();
+                    try
+                    {
+                        var response = await httpClient.GetAsync(url);
+                        vm.code = response.IsSuccessStatusCode ? await response.Content.ReadAsStringAsync() : "Unable to fetch code";
+                        // Check if it's JavaScript
+                        vm.url = url.Split('?')[0];
+                        if (vm.url.EndsWith(".js", StringComparison.OrdinalIgnoreCase))
+                        {
+                            vm.lang = "js";
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        _logger.LogWarning($"Unable to retrieve code from {url}");
+                    }
+                }
+            }
+
+            return View(vm);
         }
 
         public async Task<IActionResult> GetSource(int id)

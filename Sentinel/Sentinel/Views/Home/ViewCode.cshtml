@@ -1,0 +1,27 @@
+﻿@model Sentinel.ViewModels.ViewCodeModel
+
+<div class="d-flex flex-row">
+    <div class="flex-grow-1 larger-text">
+        @Model.url
+    </div>
+    <div>
+        <a asp-action="Index" class="btn btn-sm btn-primary">Back</a>
+    </div>
+</div>
+
+<pre class="line-numbers" data-line="@Model.line">
+<code class="language-@Model.lang">@Model.code
+</code>
+</pre>
+
+@section Scripts {
+    <script src="~/lib/prism/prism.min.js"></script>
+    <script src="~/lib/prism/plugins/line-numbers/prism-line-numbers.min.js"></script>
+    <script src="~/lib/prism/plugins/line-highlight/prism-line-highlight.min.js"></script>
+}
+
+@section ExtraCss {
+    <link href="~/lib/prism/themes/prism-okaidia.min.css" rel="stylesheet" />
+    <link href="~/lib/prism/plugins/line-numbers/prism-line-numbers.min.css" rel="stylesheet" />
+    <link href="~/lib/prism/plugins/line-highlight/prism-line-highlight.min.css" rel="stylesheet" />
+}

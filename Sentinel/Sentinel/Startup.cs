@@ -50,6 +50,8 @@ namespace Sentinel
 
             services.AddCsp(nonceByteAmount: 32);
 
+            services.AddHttpClient();
+
             services.AddTransient<ILdapService, LdapService>();
             services.AddTransient<IUserStore<User>, LdapUserStore>();
             services.AddTransient<IRoleStore<Role>, LdapRoleStore>();

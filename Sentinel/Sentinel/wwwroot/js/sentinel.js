@@ -18,6 +18,7 @@
     }
 
     var handleError = function (message, source, lineno, colno, error, vueinfo, baseUrl) {
+        console.dir(error);
         var errorData = {
             applicationName: applicationName,
             message: message,
