@@ -3,7 +3,7 @@
 Server-side errors are generally easy to deal with - they can be caught and recorded in log files, or trigger email
 notifications etc. However, client-side errors that occur in the browser are a different matter - the user may spot
 that something has gone wrong, but non-technical users are unlikely to check the console, and the application 
-developer will generally be unuware that these errors have occurred.
+developer will generally be unaware that these errors have occurred.
 
 ## The solution ##
 
