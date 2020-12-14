@@ -35,6 +35,16 @@ Secondly, the server that serves this script must add the `Access-control-allow-
 
 The other option is to download the script and serve it locally from the same domain.
 
+### Note on minification ###
+
+Sometimes an error may occur in a minified JavaScript file. In this case, the stack trace and code view won't be
+particularly useful. Sentinel will try to overcome this by un-minifying the stack trace, if possible. In order
+for this to be possible, the source map file must be available in the same location as the minified .js file
+(with either a min.map or min.js.map extension).
+Additionally, if the unminified source file is available the the code view will display the unminified file, 
+with the correct line number for the error.
+
+
 ## Vue.js integration ##
 
 There is also a Vue.js integration to catch any errors that occur in the Vue object. Just include the 
