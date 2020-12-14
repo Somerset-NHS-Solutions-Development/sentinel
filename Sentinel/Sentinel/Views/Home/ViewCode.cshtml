@@ -1,5 +1,12 @@
 ﻿@model Sentinel.ViewModels.ViewCodeModel
 
+@{
+    // Display up to 10 lines above the highlighted line
+    // as it's not so useful to have it right at the top of the screen
+    int topLineToShow = Model.line - 10;
+    if (topLineToShow < 1) topLineToShow = 1;
+}
+
 <div class="d-flex flex-row">
     <div class="flex-grow-1">
         @if (Model.unminified)
@@ -13,12 +20,16 @@
     </div>
 </div>
 
-<pre class="line-numbers" data-line="@Model.line">
+<pre id="code" class="line-numbers" data-line="@Model.line">
 <code class="language-@Model.lang">@Model.code
 </code>
 </pre>
 
 @section Scripts {
+    <script asp-add-nonce="true">
+        // Add a has to the URL so that the Prism line-numbers plugin will scroll to the highlighted line
+        window.location.hash = 'code.' + @topLineToShow;
+    </script>
     <script src="~/lib/prism/prism.min.js"></script>
     <script src="~/lib/prism/plugins/line-numbers/prism-line-numbers.min.js"></script>
     <script src="~/lib/prism/plugins/line-highlight/prism-line-highlight.min.js"></script>
