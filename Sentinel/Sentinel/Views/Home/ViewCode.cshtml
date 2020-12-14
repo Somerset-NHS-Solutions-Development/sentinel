@@ -1,8 +1,12 @@
 ﻿@model Sentinel.ViewModels.ViewCodeModel
 
 <div class="d-flex flex-row">
-    <div class="flex-grow-1 larger-text">
-        @Model.url
+    <div class="flex-grow-1">
+        @if (Model.unminified)
+        {
+            <span class="badge badge-warning mr-2">UNMINIFIED</span>
+        }
+        @Model.url - error at line <span class="badge badge-success">@Model.line</span>
     </div>
     <div>
         <a asp-action="Index" class="btn btn-sm btn-primary">Back</a>

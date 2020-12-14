@@ -13,6 +13,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Text.RegularExpressions;
 using System.Net.Http;
+using SourcemapToolkit.SourcemapParser;
+using System.IO;
+using SourcemapToolkit.CallstackDeminifier;
+using Sentinel.Util;
+using System.Text;
 
 namespace Sentinel.Controllers
 {
@@ -110,9 +115,39 @@ namespace Sentinel.Controllers
 
         public async Task<IActionResult> GetStackTrace(int id)
         {
+            var unminified = false;
             var errorLogObj = await _db.ErrorLogs.FindAsync(id);
             var stackTrace = errorLogObj?.StackTrace ?? "";
-            return Json(new { stackTrace });
+
+            // Parse the stack trace to find out which file caused the error
+            (string url, int line) = ExtractUrlAndLineNumber(stackTrace);
+            // If it was a minified file see if we can un-minify the stack trace
+            if (url.EndsWith(".min.js"))
+            {
+                try
+                {
+                    var lastSlash = url.LastIndexOf('/');
+                    var basePath = url[0..lastSlash];
+                    DeminifyStackTraceResult deminifyStackTraceResult = DeminifyStackTrace(stackTrace);
+                    StringBuilder sb = new StringBuilder();
+                    sb.Append($"{errorLogObj.Message}\r\n");
+                    foreach (var frameResult in deminifyStackTraceResult.DeminifiedStackFrameResults)
+                    {
+                        var frame = frameResult.DeminifiedStackFrame;
+                        sb.Append($"at {frame.MethodName} ({basePath}/{frame.FilePath ?? "UNKNOWN"}:{frame.SourcePosition?.ZeroBasedLineNumber ?? 0}:{frame.SourcePosition?.ZeroBasedColumnNumber ?? 0})\r\n");
+                    }
+                    stackTrace = sb.ToString();
+                    unminified = true;
+                }
+                catch (Exception ex)
+                {
+                    // Couldn't unminify - log warning and set stack trace back to original version
+                    _logger.LogWarning($"Unable to unminify stack trace from {url}: {ex}");
+                    stackTrace = errorLogObj?.StackTrace ?? "";
+                }
+            }
+
+            return Json(new { stackTrace, unminified });
         }
 
         public async Task<IActionResult> ViewCode(int id)
@@ -141,11 +176,38 @@ namespace Sentinel.Controllers
                         if (vm.url.EndsWith(".js", StringComparison.OrdinalIgnoreCase))
                         {
                             vm.lang = "js";
+                            if (vm.url.EndsWith(".min.js", StringComparison.OrdinalIgnoreCase))
+                            {
+                                // Minified .js file - see if we can deminify the stack trace - will require source map and original file to be available
+                                try
+                                {
+                                    DeminifyStackTraceResult deminifyStackTraceResult = DeminifyStackTrace(stackTrace);
+                                    var topFrame = GetTopValidFrame(deminifyStackTraceResult);
+                                    if (topFrame != null)
+                                    {
+                                        var unminifiedSourceFilename = topFrame.FilePath;
+                                        var lastSlash = vm.url.LastIndexOf('/');
+                                        var unminifiedSourceUrl = vm.url[0..lastSlash] + "/" + unminifiedSourceFilename;
+                                        // Now try and get the unminified file...
+                                        response = await httpClient.GetAsync(unminifiedSourceUrl);
+                                        if (response.IsSuccessStatusCode)
+                                        {
+                                            vm.code = await response.Content.ReadAsStringAsync();
+                                            vm.line = topFrame.SourcePosition.ZeroBasedLineNumber + 1;
+                                            vm.unminified = true;
+                                        }
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    _logger.LogWarning($"Unable to unminify code from {vm.url}: {ex}");
+                                }
+                            }
                         }
                     }
-                    catch (Exception)
+                    catch (Exception ex)
                     {
-                        _logger.LogWarning($"Unable to retrieve code from {vm.url}");
+                        _logger.LogWarning($"Unable to retrieve code from {vm.url}: {ex}");
                     }
                 }
             }
@@ -186,6 +248,22 @@ namespace Sentinel.Controllers
             return userAgent.Contains("MSIE") || userAgent.Contains("Trident");
         }
 
+        // Sometimes the top frame is invalid, with null 
+        protected SourcemapToolkit.CallstackDeminifier.StackFrame GetTopValidFrame(DeminifyStackTraceResult stackTraceResult)
+        {
+            foreach (var frameResult in stackTraceResult.DeminifiedStackFrameResults)
+            {
+                var stackFrame = frameResult.DeminifiedStackFrame;
+
+                if (stackFrame.FilePath != null && stackFrame.SourcePosition != null)
+                {
+                    return stackFrame;
+                }
+            }
+
+            return null;
+        }
+
         protected (string, int) ExtractUrlAndLineNumber(string stackTrace)
         {
             // Look for the first (url:line:column) pattern in the stack trace
@@ -195,6 +273,15 @@ namespace Sentinel.Controllers
             _ = Int32.TryParse(match?.Groups?[2]?.Value, out int line);
 
             return (url, line);
+        }
+
+        protected DeminifyStackTraceResult DeminifyStackTrace(string stackTrace)
+        {
+            var httpClient = _clientFactory.CreateClient();
+            DefaultSourceMapProvider sourceMapProvider = new DefaultSourceMapProvider(httpClient);
+            DefaultSourceCodeProvider sourceCodeProvider = new DefaultSourceCodeProvider(httpClient);
+            StackTraceDeminifier sourceMapCallstackDeminifier = StackTraceDeminfierFactory.GetStackTraceDeminfier(sourceMapProvider, sourceCodeProvider);
+            return sourceMapCallstackDeminifier.DeminifyStackTrace(stackTrace);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

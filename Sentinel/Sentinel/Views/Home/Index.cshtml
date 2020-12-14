@@ -66,7 +66,7 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Stack trace</h5>
+                <h5 class="modal-title">Stack trace <span id="unminified" class="badge badge-warning ml-2">UNMINIFIED</span></h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -202,6 +202,7 @@
                 $.get('@Url.Action("GetStackTrace", "Home")/' + id)
                     .done((data) => {
                         $('#stack-trace-content').html(data.stackTrace.replace(new RegExp('\r?\n', 'g'), '<br />'));
+                        $('#unminified').toggle(data.unminified);
                         $('#stack-trace-modal').modal('show');
                     })
                     .fail((error) => {

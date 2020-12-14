@@ -11,5 +11,6 @@ namespace Sentinel.ViewModels
         public string code { get; set; }
         public string lang { get; set; }
         public int line { get; set; }
+        public bool unminified { get; set; }
     }
 }
