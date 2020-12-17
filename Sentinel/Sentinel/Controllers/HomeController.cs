@@ -244,6 +244,7 @@ namespace Sentinel.Controllers
                     catch (Exception ex)
                     {
                         _logger.LogWarning($"Unable to retrieve code from {vm.Url}: {ex.Message}");
+                        vm.Code = "Unable to retrieve code";
                     }
                 }
             }
