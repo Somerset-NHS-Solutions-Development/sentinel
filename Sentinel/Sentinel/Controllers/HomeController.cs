@@ -126,11 +126,26 @@ namespace Sentinel.Controllers
             {
                 try
                 {
-                    var lastSlash = url.LastIndexOf('/');
-                    var basePath = url[0..lastSlash];
-                    DeminifyStackTraceResult deminifyStackTraceResult = DeminifyStackTrace(stackTrace);
+                    (string basePath, string filename) = GetBasePathAndFilename(url);
+                    var httpClient = _clientFactory.CreateClient();
+                    DeminifyStackTraceResult deminifyStackTraceResult;
+
+                    // Check if source map in db
+                    var sourceRecord = await GetSourceFromDatabase(errorLogObj.Application, filename);
+                    if (sourceRecord != null)
+                    {
+                        ISourceMapProvider sourceMapProvider = new StringSourceMapProvider(sourceRecord.MapSource);
+                        ISourceCodeProvider sourceCodeProvider = new HttpSourceCodeProvider(httpClient);
+                        deminifyStackTraceResult = DeminifyStackTrace(stackTrace, sourceMapProvider, sourceCodeProvider);
+                    }
+                    else
+                    {
+                        ISourceMapProvider sourceMapProvider = new HttpSourceMapProvider(httpClient);
+                        ISourceCodeProvider sourceCodeProvider = new HttpSourceCodeProvider(httpClient);
+                        deminifyStackTraceResult = DeminifyStackTrace(stackTrace, sourceMapProvider, sourceCodeProvider);
+                    }
                     StringBuilder sb = new StringBuilder();
-                    sb.Append($"{errorLogObj.Message}\r\n");
+                    sb.Append(errorLogObj.Message).Append("\r\n");
                     foreach (var frameResult in deminifyStackTraceResult.DeminifiedStackFrameResults)
                     {
                         var frame = frameResult.DeminifiedStackFrame;
@@ -152,62 +167,83 @@ namespace Sentinel.Controllers
 
         public async Task<IActionResult> ViewCode(int id)
         {
-            ViewCodeModel vm = new ViewCodeModel();
-            vm.lang = "markup";
-            vm.code = "Unable to fetch code";
+            ViewCodeModel vm = new ViewCodeModel
+            {
+                Lang = "markup",
+                Code = null
+            };
             var errorLogObj = await _db.ErrorLogs.FindAsync(id);
             var stackTrace = errorLogObj?.StackTrace;
 
             if (!String.IsNullOrEmpty(stackTrace))
             {
                 // Parse the stack trace to find out which file caused the error
-                (vm.url, vm.line) = ExtractUrlAndLineNumber(stackTrace);
+                (vm.Url, vm.Line) = ExtractUrlAndLineNumber(stackTrace);
 
-                if (vm.url != null)
+                if (vm.Url != null)
                 {
                     // Fetch the file
-                    var httpClient = _clientFactory.CreateClient();
                     try
                     {
-                        var response = await httpClient.GetAsync(vm.url);
-                        vm.code = response.IsSuccessStatusCode ? await response.Content.ReadAsStringAsync() : "Unable to fetch code";
-                        // Remove any query string from the URL and check if it's JavaScript
-                        vm.url = vm.url.Split('?')[0];
-                        if (vm.url.EndsWith(".js", StringComparison.OrdinalIgnoreCase))
+                        // Strip any query string
+                        vm.Url = vm.Url.Split('?')[0];
+                        if (vm.Url.EndsWith(".js", StringComparison.OrdinalIgnoreCase))
                         {
-                            vm.lang = "js";
-                            if (vm.url.EndsWith(".min.js", StringComparison.OrdinalIgnoreCase))
+                            vm.Lang = "js";
+                        }
+
+                        // Is this a minified .js file?
+                        var isMinifiedJs = vm.Url.EndsWith(".min.js", StringComparison.OrdinalIgnoreCase);
+                        (string _, string filename) = GetBasePathAndFilename(vm.Url);
+                        var httpClient = _clientFactory.CreateClient();
+                        var sourceRecord = await GetSourceFromDatabase(errorLogObj.Application, filename);
+
+                        if (isMinifiedJs && sourceRecord != null)
+                        {
+                            // Use the source map from the database, but the originial (minified) .js file from the server
+                            ISourceMapProvider sourceMapProvider = new StringSourceMapProvider(sourceRecord.MapSource);
+                            ISourceCodeProvider sourceCodeProvider = new HttpSourceCodeProvider(httpClient);
+                            DeminifyStackTraceResult deminifyStackTraceResult = DeminifyStackTrace(stackTrace, sourceMapProvider, sourceCodeProvider);
+                            var topFrame = GetTopValidFrame(deminifyStackTraceResult);
+                            if (topFrame != null)
                             {
-                                // Minified .js file - see if we can deminify the stack trace - will require source map and original file to be available
-                                try
+                                vm.Code = sourceRecord.FullSource;
+                                vm.Line = topFrame.SourcePosition.ZeroBasedLineNumber + 1;
+                                vm.Unminified = true;
+                            }
+                        }
+                        else if (isMinifiedJs)
+                        {
+                            // See if source map and unminified source are available from site
+                            ISourceMapProvider sourceMapProvider = new HttpSourceMapProvider(httpClient);
+                            ISourceCodeProvider sourceCodeProvider = new HttpSourceCodeProvider(httpClient);
+                            DeminifyStackTraceResult deminifyStackTraceResult = DeminifyStackTrace(stackTrace, sourceMapProvider, sourceCodeProvider);
+                            var topFrame = GetTopValidFrame(deminifyStackTraceResult);
+                            if (topFrame != null)
+                            {
+                                var unminifiedSourceFilename = topFrame.FilePath;
+                                var lastSlash = vm.Url.LastIndexOf('/');
+                                var unminifiedSourceUrl = vm.Url[0..lastSlash] + "/" + unminifiedSourceFilename;
+                                // Now try and get the unminified file...
+                                var response = await httpClient.GetAsync(unminifiedSourceUrl);
+                                if (response.IsSuccessStatusCode)
                                 {
-                                    DeminifyStackTraceResult deminifyStackTraceResult = DeminifyStackTrace(stackTrace);
-                                    var topFrame = GetTopValidFrame(deminifyStackTraceResult);
-                                    if (topFrame != null)
-                                    {
-                                        var unminifiedSourceFilename = topFrame.FilePath;
-                                        var lastSlash = vm.url.LastIndexOf('/');
-                                        var unminifiedSourceUrl = vm.url[0..lastSlash] + "/" + unminifiedSourceFilename;
-                                        // Now try and get the unminified file...
-                                        response = await httpClient.GetAsync(unminifiedSourceUrl);
-                                        if (response.IsSuccessStatusCode)
-                                        {
-                                            vm.code = await response.Content.ReadAsStringAsync();
-                                            vm.line = topFrame.SourcePosition.ZeroBasedLineNumber + 1;
-                                            vm.unminified = true;
-                                        }
-                                    }
-                                }
-                                catch (Exception ex)
-                                {
-                                    _logger.LogWarning($"Unable to unminify code from {vm.url}: {ex}");
+                                    vm.Code = await response.Content.ReadAsStringAsync();
+                                    vm.Line = topFrame.SourcePosition.ZeroBasedLineNumber + 1;
+                                    vm.Unminified = true;
                                 }
                             }
+                        }
+                        if (vm.Code == null)
+                        {
+                            // Either a minified js file that we can't unminify, or plain markup (HTML)
+                            var response = await httpClient.GetAsync(vm.Url);
+                            vm.Code = response.IsSuccessStatusCode ? await response.Content.ReadAsStringAsync() : "Unable to fetch code";
                         }
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogWarning($"Unable to retrieve code from {vm.url}: {ex}");
+                        _logger.LogWarning($"Unable to retrieve code from {vm.Url}: {ex.Message}");
                     }
                 }
             }
@@ -275,13 +311,24 @@ namespace Sentinel.Controllers
             return (url, line);
         }
 
-        protected DeminifyStackTraceResult DeminifyStackTrace(string stackTrace)
+        protected DeminifyStackTraceResult DeminifyStackTrace(string stackTrace, ISourceMapProvider sourceMapProvider, ISourceCodeProvider sourceCodeProvider)
         {
-            var httpClient = _clientFactory.CreateClient();
-            DefaultSourceMapProvider sourceMapProvider = new DefaultSourceMapProvider(httpClient);
-            DefaultSourceCodeProvider sourceCodeProvider = new DefaultSourceCodeProvider(httpClient);
             StackTraceDeminifier sourceMapCallstackDeminifier = StackTraceDeminfierFactory.GetStackTraceDeminfier(sourceMapProvider, sourceCodeProvider);
             return sourceMapCallstackDeminifier.DeminifyStackTrace(stackTrace);
+        }
+
+        protected async Task<Source> GetSourceFromDatabase(string application, string filename)
+        {
+            return await _db.Sources.FirstOrDefaultAsync(f => f.Application == application && f.Filename == filename);
+        }
+
+        protected (string, string) GetBasePathAndFilename(string url)
+        {
+            var lastSlash = url.LastIndexOf('/');
+            var basePath = url[0..lastSlash];
+            var startOfFilename = lastSlash + 1;
+            var filename = url[startOfFilename..];
+            return (basePath, filename);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

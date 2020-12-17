@@ -1,0 +1,92 @@
+﻿@model List<Sentinel.ViewModels.UploadSummaryViewModel>
+
+@{
+    ViewData["Title"] = "Uploads";
+}
+
+@if (TempData["message"] != null)
+{
+    <div class="alert alert-success m-2" role="alert">@TempData["message"]</div>
+}
+@if (TempData["error"] != null)
+{
+    <div class="alert alert-danger m-2" role="alert">@TempData["error"]</div>
+}
+
+<div class="row mb-3">
+    <div class="col">
+        <a class="btn btn-primary" asp-action="Create">New upload...</a>
+    </div>
+</div>
+
+<table class="table table-sm table-hover">
+    <thead>
+        <tr>
+            <th>Application</th>
+            <th>Minified file name</th>
+            <th class="text-center">Source map?</th>
+            <th class="text-center">Full source?</th>
+            <th>Last updated</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var u in Model)
+        {
+            <tr>
+                <td>@u.Application</td>
+                <td>@u.Filename</td>
+                <td class="text-center"><display-boolean value="@u.HasSourceMap"></display-boolean></td>
+                <td class="text-center"><display-boolean value="@u.HasFullSource"></display-boolean></td>
+                <td>@u.LastUpdated.ToLocalTime().ToShortDateString() @u.LastUpdated.ToLocalTime().ToShortTimeString()</td>
+                <td style="white-space: nowrap; text-align: right">
+                    <a class="btn btn-sm btn-outline-primary edit-btn" asp-action="Edit" asp-route-id="@u.Id" data-toggle="tooltip" title="Edit">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                    <button class="btn btn-sm btn-outline-danger delete-btn" data-id="@u.Id" data-toggle="tooltip" title="Hold to delete">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+@section Scripts {
+    <script asp-add-nonce="true">
+        var deleting = false;
+
+        // Implement delete button that has to be held down for delete
+        // (as alternative to a confirmation page)
+        function decrementTimer(button, time) {
+            if (!deleting) return;
+
+            time -= 1000;
+            if (time == 0) {
+                button.html('<i class="fas fa-hourglass-start"></i>');
+                var id = button.data('id');
+                window.location = '@(Url.Action("Delete"))/' + id;
+            } else {
+                timeStr = (time / 1000) + "...";
+                button.html(timeStr);
+                setTimeout(function () {
+                    decrementTimer(button, time)
+                }, 1000);
+            }
+        }
+
+            $(function () {
+                $('[data-toggle="tooltip"]').tooltip();
+
+                $('.delete-btn').mousedown(function () {
+                    deleting = true;
+                    decrementTimer($(this), 4000);
+                })
+                $('.delete-btn').on('mouseup mouseout', function () {
+                    deleting = false;
+                    $('.delete-btn').html('<i class="fas fa-trash"></i>');
+                })
+            })
+    </script>
+}

@@ -63,15 +63,14 @@
             }
         }
 
-        $(document).ready(function () {
-            $(function () {
-                $('[data-toggle="tooltip"]').tooltip()
-            })
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+
             $('.delete-btn').mousedown(function () {
                 deleting = true;
                 decrementTimer($(this), 4000);
             })
-            $('.delete-btn').mouseup(function () {
+            $('.delete-btn').on('mouseup mouseout', function () {
                 deleting = false;
                 $('.delete-btn').html('<i class="fas fa-trash"></i>');
             })

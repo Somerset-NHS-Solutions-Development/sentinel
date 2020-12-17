@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 
 namespace Sentinel.Util
 {
-    public class DefaultSourceMapProvider : ISourceMapProvider
+    public class HttpSourceMapProvider : ISourceMapProvider
     {
         private readonly HttpClient _httpClient;
 
-        public DefaultSourceMapProvider(HttpClient httpClient)
+        public HttpSourceMapProvider(HttpClient httpClient)
         {
             _httpClient = httpClient;
         }

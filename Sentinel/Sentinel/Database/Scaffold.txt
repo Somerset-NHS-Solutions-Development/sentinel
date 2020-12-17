@@ -1,1 +1,1 @@
-﻿Scaffold-DbContext 'Data Source=.\SQLEXPRESS;Initial Catalog=Sentinel;Trusted_connection=true' Microsoft.EntityFrameworkCore.SqlServer -tables ErrorLog -context SentinelContext -OutputDir Models -contextdir Models -force
+﻿Scaffold-DbContext 'Data Source=.\SQLEXPRESS;Initial Catalog=Sentinel;Trusted_connection=true' Microsoft.EntityFrameworkCore.SqlServer -tables ErrorLog,Source -context SentinelContext -OutputDir Models -contextdir Models -force

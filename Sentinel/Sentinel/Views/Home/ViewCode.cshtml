@@ -3,25 +3,25 @@
 @{
     // Display up to 10 lines above the highlighted line
     // as it's not so useful to have it right at the top of the screen
-    int topLineToShow = Model.line - 10;
+    int topLineToShow = Model.Line - 10;
     if (topLineToShow < 1) topLineToShow = 1;
 }
 
 <div class="d-flex flex-row sticky pt-1 pb-1">
     <div class="flex-grow-1">
-        @if (Model.unminified)
+        @if (Model.Unminified)
         {
             <span class="badge badge-warning mr-2">UNMINIFIED</span>
         }
-        @Model.url - error at line <span class="badge badge-success">@Model.line</span>
+        @Model.Url - error at line <span class="badge badge-success">@Model.Line</span>
     </div>
     <div>
         <a asp-action="Index" class="btn btn-sm btn-primary">Back</a>
     </div>
 </div>
 
-<pre id="code" class="line-numbers" data-line="@Model.line">
-<code class="language-@Model.lang">@Model.code
+<pre id="code" class="line-numbers" data-line="@Model.Line">
+<code class="language-@Model.Lang">@Model.Code
 </code>
 </pre>
 

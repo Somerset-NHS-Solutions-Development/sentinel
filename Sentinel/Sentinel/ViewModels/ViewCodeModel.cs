@@ -7,10 +7,10 @@ namespace Sentinel.ViewModels
 {
     public class ViewCodeModel
     {
-        public string url { get; set; }
-        public string code { get; set; }
-        public string lang { get; set; }
-        public int line { get; set; }
-        public bool unminified { get; set; }
+        public string Url { get; set; }
+        public string Code { get; set; }
+        public string Lang { get; set; }
+        public int Line { get; set; }
+        public bool Unminified { get; set; }
     }
 }

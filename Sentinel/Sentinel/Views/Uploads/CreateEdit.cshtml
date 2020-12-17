@@ -1,0 +1,54 @@
+﻿@model Sentinel.ViewModels.EditUploadViewModel
+
+@{
+    ViewData["Title"] = "Uploads";
+    string buttonText = Model.Id == 0 ? "Upload" : "Update";
+    string uploadText = Model.Id == 0 ? "Upload both of the following" : "Update the following as necessary";
+}
+
+<div class="row">
+    <form enctype="multipart/form-data" class="form col-6" asp-controller="Uploads" asp-action="CreateEdit" method="post">
+        <input type="hidden" asp-for="Id" value="@Model.Id" />
+        <div class="form-group">
+            <label asp-for="Filename"></label>
+            <div class="input-group mr-2">
+                <input asp-for="Filename" type="text" class="form-control" required/>
+                <div class="input-group-append">
+                    <span class="input-group-text">.min.js</span>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="Application"></label>
+            <input asp-for="Application" type="text" class="form-control" required/>
+        </div>
+        <div class="form-group">
+            @uploadText
+        </div>
+        <div class="form-group">
+            <div class="custom-file">
+                <input type="file" class="custom-file-input" asp-for="SourceMap">
+                <label class="custom-file-label" for="SourceMap">Source map file</label>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="custom-file">
+                <input type="file" class="custom-file-input" asp-for="FullSource">
+                <label class="custom-file-label" for="FullSource">Unminified source file</label>
+            </div>
+        </div>
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">@buttonText</button>
+        </div>
+    </form>
+</div>
+
+
+@section Scripts {
+    <script src="~/lib/bs-custom-file-input/bs-custom-file-input.min.js"></script>
+    <script asp-add-nonce="true">
+        $(function () {
+            bsCustomFileInput.init();
+        })
+    </script>
+}

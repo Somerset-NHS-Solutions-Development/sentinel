@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 
 namespace Sentinel.Util
 {
-    public class DefaultSourceCodeProvider : ISourceCodeProvider
+    public class HttpSourceCodeProvider : ISourceCodeProvider
     {
         private readonly HttpClient _httpClient;
 
-        public DefaultSourceCodeProvider(HttpClient httpClient)
+        public HttpSourceCodeProvider(HttpClient httpClient)
         {
             _httpClient = httpClient;
         }
