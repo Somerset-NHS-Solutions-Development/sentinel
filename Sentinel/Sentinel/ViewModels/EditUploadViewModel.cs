@@ -27,7 +27,7 @@ namespace Sentinel.ViewModels
         {
             Id = s.Id;
             Application = s.Application;
-            Filename = s.Filename;
+            Filename = s.Filename.Replace(".min.js", "");
         }
 
         public async Task UpdateSource(Source s)

@@ -24,8 +24,6 @@
         <tr>
             <th>Application</th>
             <th>Minified file name</th>
-            <th class="text-center">Source map?</th>
-            <th class="text-center">Full source?</th>
             <th>Last updated</th>
             <th></th>
         </tr>
@@ -36,8 +34,6 @@
             <tr>
                 <td>@u.Application</td>
                 <td>@u.Filename</td>
-                <td class="text-center"><display-boolean value="@u.HasSourceMap"></display-boolean></td>
-                <td class="text-center"><display-boolean value="@u.HasFullSource"></display-boolean></td>
                 <td>@u.LastUpdated.ToLocalTime().ToShortDateString() @u.LastUpdated.ToLocalTime().ToShortTimeString()</td>
                 <td style="white-space: nowrap; text-align: right">
                     <a class="btn btn-sm btn-outline-primary edit-btn" asp-action="Edit" asp-route-id="@u.Id" data-toggle="tooltip" title="Edit">
