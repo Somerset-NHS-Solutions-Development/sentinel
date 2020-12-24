@@ -12,8 +12,6 @@ namespace Sentinel.ViewModels
         public string Application { get; set; }
         public string Filename { get; set; }
         public DateTime LastUpdated { get; set; }
-        public bool HasSourceMap { get; set; }
-        public bool HasFullSource { get; set; }
 
         public UploadSummaryViewModel(Source s)
         {
@@ -21,8 +19,6 @@ namespace Sentinel.ViewModels
             Application = s.Application;
             Filename = s.Filename;
             LastUpdated = s.LastUpdated;
-            HasSourceMap = !String.IsNullOrEmpty(s.MapSource);
-            HasFullSource = !String.IsNullOrEmpty(s.FullSource);
         }
     }
 }
