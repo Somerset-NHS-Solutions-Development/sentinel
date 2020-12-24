@@ -71,6 +71,9 @@ The database is extremely simple so should work on any relatively recent version
 ## Authentication ##
 
 Active directory authentication is used for logins. Additional users can be added on the User Admin page.
+Connecting to an on-premesis AD server required some custom code, this can be found in the Authentication
+sub-project. These custom classes are then referenced when ASP.NET Identity is setup - see the Startup.CSP
+file at around line 43.
 
 ## Development ##
 
@@ -93,11 +96,11 @@ although it doesn't bother rebuilding unless a change has been made to the C# co
 
 ## Deployment
 
-The project has been set up with web deployment configured for ydh-watchdog. In order
+The project has been set up the deploy to an IIS server using Web deploy. In order
 to use this you will need to ensure that permissions have been set up in IIS:
 
 Click on the Sentinel application in IIS, then on IIS Manager Permissions. 
-Click on "Allow User..." to add yourself to the list. Then click the "YDH-WATCHDOG"
+Click on "Allow User..." to add yourself to the list. Then click the server
 root node, then Management Service. Stop the service, add your IP address to the
 list and start the service again.
 
@@ -106,7 +109,7 @@ Ensure "Watchdog" is selected as the publish profile and click Publish. If there
 try clicking Edit, then "Validate Connection", If this works, cancel and deploy again.
 If not you may have to fix the permissions as described above.
 
-It could potentially be deployed to other locations, Watchdog uses IIS 10 with the following add-ons:
+Watchdog currently uses a server running IIS 10 with the following add-ons:
 - Build Tools for Visual Studio 2019
 - .NET Core hosting bundle
 - WebDeploy
