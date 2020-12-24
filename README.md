@@ -115,3 +115,5 @@ Watchdog currently uses a server running IIS 10 with the following add-ons:
 - WebDeploy
 
 Note that it can't be deployed to a Linux server as the code used for the AD logins is Windows-specific.
+
+For more information on Web Deploy see https://docs.microsoft.com/en-us/visualstudio/deployment/quickstart-deploy-to-a-web-site?view=vs-2019
