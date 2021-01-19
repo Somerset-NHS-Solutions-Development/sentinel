@@ -127,6 +127,7 @@ For more information on Web Deploy see https://docs.microsoft.com/en-us/visualst
 Copy this to appsettings.Development.json and appsettings.Production.json (next to appsettings.json)
 and edit as required:
 
+```
 {
   "Logging": {
     "LogLevel": {
@@ -146,3 +147,5 @@ and edit as required:
     "EMailBcc": ""
   }
 }
+```
+
