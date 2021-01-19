@@ -1,4 +1,4 @@
-USE [ADAuthTemplate]
+USE [Sentinel]
 GO
 /****** Object:  Table [dbo].[Role]    Script Date: 02/07/2020 10:58:09 ******/
 SET ANSI_NULLS ON
