@@ -59,8 +59,6 @@ namespace Sentinel
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
 
-            //services.AddTransient<IEmailService, EmailService>();
-
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
             services.AddRazorPages();
 
@@ -75,8 +73,6 @@ namespace Sentinel
             services.AddHttpContextAccessor();
 
             services.Configure<ApplicationOptions>(Configuration.GetSection("ApplicationOptions"));
-
-            services.AddAuthorization(options => options.AddPolicy("TestPolicy", policy => policy.RequireClaim("SQLDBA")));
 
             services.AddCors(options =>
             {
