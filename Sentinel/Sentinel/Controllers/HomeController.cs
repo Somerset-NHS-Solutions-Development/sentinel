@@ -127,7 +127,7 @@ namespace Sentinel.Controllers
                 try
                 {
                     (string basePath, string filename) = GetBasePathAndFilename(url);
-                    var httpClient = _clientFactory.CreateClient();
+                    var httpClient = _clientFactory.CreateClient("WindowsAuth");
                     DeminifyStackTraceResult deminifyStackTraceResult;
 
                     // Check if source map in db
@@ -179,6 +179,13 @@ namespace Sentinel.Controllers
             {
                 // Parse the stack trace to find out which file caused the error
                 (vm.Url, vm.Line) = ExtractUrlAndLineNumber(stackTrace);
+                if (String.IsNullOrEmpty(vm.Url))
+                {
+                    // Probably didn't have a full stack trace
+                    // Fallback to just fetching the file as specified in error log
+                    vm.Url = errorLogObj.Url;
+                    vm.Line = 1;
+                }
 
                 if (vm.Url != null)
                 {
@@ -195,7 +202,7 @@ namespace Sentinel.Controllers
                         // Is this a minified .js file?
                         var isMinifiedJs = vm.Url.EndsWith(".min.js", StringComparison.OrdinalIgnoreCase);
                         (string _, string filename) = GetBasePathAndFilename(vm.Url);
-                        var httpClient = _clientFactory.CreateClient();
+                        var httpClient = _clientFactory.CreateClient("WindowsAuth");
                         var sourceRecord = await GetSourceFromDatabase(errorLogObj.Application, filename);
 
                         if (isMinifiedJs && sourceRecord != null)

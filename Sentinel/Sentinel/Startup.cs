@@ -20,6 +20,8 @@ using System.Threading.Tasks;
 using Sentinel.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using System.Net.Http;
+using System.Net;
 
 namespace Sentinel
 {
@@ -50,7 +52,13 @@ namespace Sentinel
 
             services.AddCsp(nonceByteAmount: 32);
 
-            services.AddHttpClient();
+            services.AddHttpClient("WindowsAuth").ConfigurePrimaryHttpMessageHandler(() =>
+            {
+                return new HttpClientHandler()
+                {
+                    UseDefaultCredentials = true
+                };
+            }); ;
 
             services.AddTransient<ILdapService, LdapService>();
             services.AddTransient<IUserStore<User>, LdapUserStore>();
