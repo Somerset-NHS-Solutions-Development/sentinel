@@ -74,6 +74,9 @@ namespace Sentinel
             services.AddMemoryCache();
 
             // IP rate limting
+            services.AddOptions();
+            services.AddMemoryCache();
+            services.AddSingleton<IProcessingStrategy, AsyncKeyLockProcessingStrategy>(); // New for 4.x
             services.Configure<IpRateLimitOptions>(Configuration.GetSection("IpRateLimiting"));
             services.AddSingleton<IIpPolicyStore, MemoryCacheIpPolicyStore>();
             services.AddSingleton<IRateLimitCounterStore, MemoryCacheRateLimitCounterStore>();
