@@ -1,8 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-
-#nullable disable
 
 namespace Sentinel.Models
 {
@@ -24,6 +23,7 @@ namespace Sentinel.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
+                optionsBuilder.UseSqlServer("Name=ConnectionStrings:ApplicationConnection");
             }
         }
 
