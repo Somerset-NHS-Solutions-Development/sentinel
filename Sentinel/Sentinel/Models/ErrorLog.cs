@@ -22,5 +22,6 @@ namespace Sentinel.Models
         public string StackTrace { get; set; }
         public bool Processed { get; set; }
         public string Url { get; set; }
+        public string PageSource { get; set; }
     }
 }

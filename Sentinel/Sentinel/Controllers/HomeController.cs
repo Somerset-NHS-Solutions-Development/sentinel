@@ -241,7 +241,12 @@ namespace Sentinel.Controllers
                                 }
                             }
                         }
-                        if (vm.Code == null)
+                        if (!String.IsNullOrEmpty(errorLogObj.PageSource))
+                        {
+                            // We were sent the source of the page along with the error, use this
+                            vm.Code = errorLogObj.PageSource;
+                        }
+                        else if (vm.Code == null)
                         {
                             // Either a minified js file that we can't unminify, or plain markup (HTML)
                             var response = await httpClient.GetAsync(vm.Url);
@@ -313,6 +318,11 @@ namespace Sentinel.Controllers
             // Look for the first (url:line:column) pattern in the stack trace
             Regex rgx = new Regex(@"(?<=\()(.*):([0-9]*):[0-9]*\)");
             var match = rgx.Match(stackTrace);
+            if (match.Captures.Count == 0)
+            {
+                rgx = new Regex(@"(.*):([0-9]*):[0-9]*");
+                match = rgx.Match(stackTrace);
+            }
             var url = match?.Groups?[1]?.Value;
             _ = Int32.TryParse(match?.Groups?[2]?.Value, out int line);
 

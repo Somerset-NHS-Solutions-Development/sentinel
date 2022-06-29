@@ -65,7 +65,8 @@ namespace Sentinel.Controllers
                     Col = colNoAsInt,
                     StackTrace = jError.stack,
                     Url = jError.url,
-                    Processed = false
+                    Processed = false,
+                    PageSource = jError.pageSource
                 };
 
                 _db.ErrorLogs.Add(el);

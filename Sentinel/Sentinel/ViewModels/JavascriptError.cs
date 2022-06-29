@@ -20,6 +20,7 @@ namespace Sentinel.ViewModels
         public string agent { get; set; }
         public string platform { get; set; }
         public string url { get; set; }
+        public string pageSource { get; set; }
 #pragma warning restore IDE1006
     }
 }

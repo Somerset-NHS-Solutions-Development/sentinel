@@ -19,6 +19,10 @@
 
     var handleError = function (message, source, lineno, colno, error, vueinfo, baseUrl) {
         console.dir(error);
+        let pageSource = '';
+        if (window.location.href === source) {
+            pageSource = '\n\n<!DOCTYPE html>\n<html>\n' + document.documentElement.innerHTML + '\n<html>\n';
+        }
         var errorData = {
             applicationName: applicationName,
             message: message,
@@ -29,7 +33,8 @@
             vueinfo: vueinfo,
             agent: window.navigator.userAgent,
             platform: window.navigator.platform,
-            url: window.location.href
+            url: window.location.href,
+            pageSource: pageSource
         };
         var xhr = new XMLHttpRequest();
         var url = baseUrl + 'Error/PostError';
