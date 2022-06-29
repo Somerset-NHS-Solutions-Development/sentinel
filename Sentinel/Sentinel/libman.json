@@ -4,7 +4,7 @@
   "libraries": [
     {
       "provider": "jsdelivr",
-      "library": "bootstrap@4.6.0",
+      "library": "bootstrap@4.6.1",
       "destination": "wwwroot/lib/bootstrap/",
       "files": [
         "dist/css/bootstrap-grid.css",
@@ -49,7 +49,7 @@
     },
     {
       "provider": "jsdelivr",
-      "library": "better-dateinput-polyfill@3.3.0",
+      "library": "better-dateinput-polyfill@3.3.1",
       "destination": "wwwroot/lib/better-dateinput-polyfill/",
       "files": [
         "dist/better-dateinput-polyfill.js",
@@ -57,14 +57,14 @@
       ]
     },
     {
-      "library": "gsap@3.5.1",
+      "library": "gsap@3.10.4",
       "destination": "wwwroot/lib/gsap/",
       "files": [
         "gsap.min.js"
       ]
     },
     {
-      "library": "vue@2.6.12",
+      "library": "vue@2.6.14",
       "destination": "wwwroot/lib/vue/",
       "files": [
         "vue.js",
@@ -72,7 +72,7 @@
       ]
     },
     {
-      "library": "font-awesome@5.15.1",
+      "library": "font-awesome@5.15.4",
       "destination": "wwwroot/lib/font-awesome/",
       "files": [
         "css/all.min.css",
@@ -95,7 +95,7 @@
       ]
     },
     {
-      "library": "prism@1.22.0",
+      "library": "prism@1.28.0",
       "destination": "wwwroot/lib/prism/",
       "files": [
         "prism.min.js",
@@ -107,7 +107,7 @@
       ]
     },
     {
-      "library": "jquery@3.5.1",
+      "library": "jquery@3.6.0",
       "destination": "wwwroot/lib/jquery/",
       "files": [
         "jquery.min.js",
