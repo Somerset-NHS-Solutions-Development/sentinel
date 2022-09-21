@@ -14,7 +14,7 @@ namespace Sentinel.Util
         // Generate a random password of the specified size
         public static string GetUniqueKey(int size = 6, string chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890")
         {
-            using (var crypto = new RNGCryptoServiceProvider())
+            using (var crypto = RandomNumberGenerator.Create())
             {
                 var data = new byte[size];
 
