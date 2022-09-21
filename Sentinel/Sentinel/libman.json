@@ -4,7 +4,7 @@
   "libraries": [
     {
       "provider": "jsdelivr",
-      "library": "bootstrap@4.6.1",
+      "library": "bootstrap@4.6.2",
       "destination": "wwwroot/lib/bootstrap/",
       "files": [
         "dist/css/bootstrap-grid.css",
@@ -57,7 +57,7 @@
       ]
     },
     {
-      "library": "gsap@3.10.4",
+      "library": "gsap@3.11.1",
       "destination": "wwwroot/lib/gsap/",
       "files": [
         "gsap.min.js"
@@ -95,7 +95,7 @@
       ]
     },
     {
-      "library": "prism@1.28.0",
+      "library": "prism@1.29.0",
       "destination": "wwwroot/lib/prism/",
       "files": [
         "prism.min.js",
@@ -107,7 +107,7 @@
       ]
     },
     {
-      "library": "jquery@3.6.0",
+      "library": "jquery@3.6.1",
       "destination": "wwwroot/lib/jquery/",
       "files": [
         "jquery.min.js",
