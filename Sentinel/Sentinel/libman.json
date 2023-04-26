@@ -57,7 +57,7 @@
       ]
     },
     {
-      "library": "gsap@3.11.1",
+      "library": "gsap@3.11.5",
       "destination": "wwwroot/lib/gsap/",
       "files": [
         "gsap.min.js"
@@ -107,7 +107,7 @@
       ]
     },
     {
-      "library": "jquery@3.6.1",
+      "library": "jquery@3.6.4",
       "destination": "wwwroot/lib/jquery/",
       "files": [
         "jquery.min.js",
