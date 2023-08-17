@@ -83,8 +83,6 @@ namespace Sentinel
             services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
             services.AddHttpContextAccessor();
 
-            services.Configure<ApplicationOptions>(Configuration.GetSection("ApplicationOptions"));
-
             services.AddCors(options =>
             {
                 options.AddPolicy("CorsPolicy",
