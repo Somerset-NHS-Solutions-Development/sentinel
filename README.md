@@ -141,13 +141,6 @@ and edit as required:
   },
   "ConnectionStrings": {
     "ApplicationConnection": "Data Source=SERVER\INSTANCE;Initial Catalog=Sentinel;Trusted_connection=true"
-  },
-  "ApplicationOptions": {
-    "SmtpHost": "127.0.0.1",
-    "SmtpPort": "25",
-    "EmailFrom": "no-reply@test.com",
-    "EMailCc": "",
-    "EMailBcc": ""
   }
 }
 ```
