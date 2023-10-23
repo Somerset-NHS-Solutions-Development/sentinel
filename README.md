@@ -95,7 +95,7 @@ You can then test it by running any web application, but instead of including a 
 to https://[SERVER]/Sentinel/js/sentinel.min.js as described above, include a link to your instance
 running on localhost, i.e. https://localhost:XXXXX/js/sentinel.min.js
 
-This application targets .NET 5.0, hence the requirement for version 16.8+ of Visual Studio.
+This application targets .NET 6.0, hence the requirement for version 17.0+ of Visual Studio.
 
 As part of the build it runs a minifier on the sentinel.js and sentinel-vue.js scripts (see bundleconfig.json),
 although it does *not* rebuild them unless a change has been made to the C# code.
